@@ -22,6 +22,8 @@ import edu.wpi.first.wpilibj.Spark;
 import com.revrobotics.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -45,6 +47,8 @@ public class Robot extends TimedRobot {
   public Spark m_sparkPWMTest;
 
   public CANPIDController m_PIDTest;
+  
+  public DifferentialDrive m_driveTrain;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -121,6 +125,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+    
     if (m_joystick.getXButton()) {
       System.out.println("The talon is running");
       m_climberMotor.set(ControlMode.PercentOutput, 1);
@@ -137,8 +142,6 @@ public class Robot extends TimedRobot {
       m_motor.set(0);
       System.out.println("Not Running!!");
     }
-
-    SmartDashboard.putNumber("Neo Speed", value);
 
   }
 
