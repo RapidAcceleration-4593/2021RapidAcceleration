@@ -17,6 +17,7 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PWMVictorSPX;
 import edu.wpi.first.wpilibj.SpeedController;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Spark;
 import com.revrobotics.*;
@@ -42,6 +43,9 @@ public class Robot extends TimedRobot {
   private static final int kJoystickPort = 1;
 
   public CANSparkMax m_motor;
+  public CANEncoder m_encoder;
+  public CANSparkMax m_motor2;
+  public SpeedControllerGroup m_motors;
   public XboxController m_joystick;
   public TalonSRX m_climberMotor;
   public Spark m_sparkPWMTest;
@@ -62,6 +66,14 @@ public class Robot extends TimedRobot {
 
     System.out.println("Init");
     m_motor = new CANSparkMax(4, MotorType.kBrushless);
+    m_motor.setSmartCurrentLimit(39);
+    m_motor.setSecondaryCurrentLimit(40);
+
+    m_motor2 = new CANSparkMax(5, MotorType.kBrushless);
+    m_motor2.setSmartCurrentLimit(39);
+    m_motor2.setSecondaryCurrentLimit(40);
+    m_encoder = new CANEncoder(m_motor);
+    m_motors = new SpeedControllerGroup(m_motor, m_motor2);
     m_climberMotor = new TalonSRX(1);
     m_sparkPWMTest = new Spark(0);
 
@@ -136,11 +148,14 @@ public class Robot extends TimedRobot {
 
     if (m_joystick.getYButton()) {
       System.out.println("The spark is running");
-      m_motor.set(-1);
+      System.out.println("Velocity is " + m_encoder.getVelocity());
+      m_motors.set(-1);
+      
     }
     else {
-      m_motor.set(0);
+      m_motors.set(0);
       System.out.println("Not Running!!");
+      System.out.println("Velocity is " + m_encoder.getVelocity());
     }
 
   }
