@@ -13,10 +13,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import com.revrobotics.CANSparkMax;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PWMVictorSPX;
-import edu.wpi.first.wpilibj.SpeedController;
+//import com.revrobotics.CANSparkMax;
+//import edu.wpi.first.wpilibj.Joystick;
+//import edu.wpi.first.wpilibj.PWMVictorSPX;
+//import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Spark;
@@ -24,6 +24,7 @@ import com.revrobotics.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.Vision;
 
 
 /**
@@ -39,8 +40,8 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private static final int kMotorPort = 1;
-  private static final int kJoystickPort = 1;
+  //private static final int kMotorPort = 1;
+  //private static final int kJoystickPort = 1;
 
   public CANSparkMax m_motor;
   public CANEncoder m_encoder;
@@ -49,7 +50,7 @@ public class Robot extends TimedRobot {
   public XboxController m_joystick;
   public TalonSRX m_climberMotor;
   public Spark m_sparkPWMTest;
-
+  public Vision m_vision;
   public CANPIDController m_PIDTest;
   
   public DifferentialDrive m_driveTrain;
@@ -76,7 +77,7 @@ public class Robot extends TimedRobot {
     m_motors = new SpeedControllerGroup(m_motor, m_motor2);
     m_climberMotor = new TalonSRX(1);
     m_sparkPWMTest = new Spark(0);
-
+    m_vision = new Vision();
     m_PIDTest = new CANPIDController(m_motor);
 
     m_PIDTest.setFF(.00001);
@@ -139,7 +140,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     
     if (m_joystick.getXButton()) {
-      System.out.println("The talon is running");
+      // System.out.println("The talon is running");
       m_climberMotor.set(ControlMode.PercentOutput, 1);
     }
     else {
@@ -147,17 +148,19 @@ public class Robot extends TimedRobot {
     }
 
     if (m_joystick.getYButton()) {
-      System.out.println("The spark is running");
-      System.out.println("Velocity is " + m_encoder.getVelocity());
+      // System.out.println("The spark is running");
+      // System.out.println("Velocity is " + m_encoder.getVelocity());
       m_motors.set(-1);
       
     }
     else {
       m_motors.set(0);
-      System.out.println("Not Running!!");
-      System.out.println("Velocity is " + m_encoder.getVelocity());
+      // System.out.println("Not Running!!");
+      // System.out.println("Velocity is " + m_encoder.getVelocity());
     }
-
+   
+    System.out.println("tx: " + m_vision.getAngleX());
+    System.out.println("ty: " + m_vision.getAngleY());
   }
 
   /**
