@@ -150,8 +150,7 @@ public class Robot extends TimedRobot {
     if (m_joystick.getYButton()) {
       // System.out.println("The spark is running");
       // System.out.println("Velocity is " + m_encoder.getVelocity());
-      m_motors.set(-1);
-      
+      m_motors.set(-1);    
     }
     else {
       m_motors.set(0);
@@ -159,8 +158,23 @@ public class Robot extends TimedRobot {
       // System.out.println("Velocity is " + m_encoder.getVelocity());
     }
    
-    System.out.println("tx: " + m_vision.getAngleX());
-    System.out.println("ty: " + m_vision.getAngleY());
+    // System.out.println("tx: " + m_vision.getAngleX());
+    // System.out.println("ty: " + m_vision.getAngleY());
+  
+
+  // if (m_joystick.getAButton()) {
+    //must indent again with button added
+  if (m_vision.getAngleX() < -2.5) {
+     System.out.println("We move left");
+    }
+   if (m_vision.getAngleX() > 2.5) {
+     System.out.println("We move right");
+    }
+   if (m_vision.getAngleX() < 2.5 && m_vision.getAngleX() > -2.5) {
+     System.out.println("We shoot!!!!");
+     m_motors.set(-.75);
+    }
+
   }
 
   /**
