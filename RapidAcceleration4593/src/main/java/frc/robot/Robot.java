@@ -11,20 +11,17 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-//import com.revrobotics.CANSparkMax;
-//import edu.wpi.first.wpilibj.Joystick;
-//import edu.wpi.first.wpilibj.PWMVictorSPX;
-//import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.Spark;
-import com.revrobotics.*;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.robot.Vision;
+import frc.robot.Constants;
 
 
 /**
@@ -48,11 +45,17 @@ public class Robot extends TimedRobot {
   public CANSparkMax m_motor2;
   public SpeedControllerGroup m_motors;
   public XboxController m_joystick;
+  public TalonSRX m_turretMotor;
   public TalonSRX m_climberMotor;
-  public Spark m_sparkPWMTest;
   public Vision m_vision;
   public CANPIDController m_PIDTest;
   
+  public CANSparkMax FRM;
+  public CANSparkMax RRM;
+  public CANSparkMax FLM;
+  public CANSparkMax RLM;
+  public SpeedControllerGroup m_rightDrive;
+  public SpeedControllerGroup m_leftDrive;
   public DifferentialDrive m_driveTrain;
 
   /**
@@ -66,23 +69,32 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     System.out.println("Init");
-    m_motor = new CANSparkMax(4, MotorType.kBrushless);
+    /*
+    m_motor = new CANSparkMax(Constants.shooter.shooterLeftPort, MotorType.kBrushless);
     m_motor.setSmartCurrentLimit(39);
     m_motor.setSecondaryCurrentLimit(40);
-
-    m_motor2 = new CANSparkMax(5, MotorType.kBrushless);
+    // m_motor2 = new CANSparkMax(Constants.shooter.shooterRightPort, MotorType.kBrushless);
     m_motor2.setSmartCurrentLimit(39);
     m_motor2.setSecondaryCurrentLimit(40);
     m_encoder = new CANEncoder(m_motor);
-    m_motors = new SpeedControllerGroup(m_motor, m_motor2);
-    m_climberMotor = new TalonSRX(1);
-    m_sparkPWMTest = new Spark(0);
+    // m_motors = new SpeedControllerGroup(m_motor, m_motor2);
+    // m_climberMotor = new TalonSRX(Constants.climber.climberMotor1Port);
+    */
+    m_turretMotor = new TalonSRX(Constants.shooter.turretPort);
     m_vision = new Vision();
-    m_PIDTest = new CANPIDController(m_motor);
+    //m_PIDTest = new CANPIDController(m_motor);
 
-    m_PIDTest.setFF(.00001);
+    // m_PIDTest.setFF(Constants.shooter.shooterFF);
     // m_PIDTest.setP(.00001);
 
+    /* FRM = new CANSparkMax(1, MotorType.kBrushless);
+    RRM = new CANSparkMax(2, MotorType.kBrushless);
+    m_rightDrive = new SpeedControllerGroup(FRM, RRM);
+    RLM = new CANSparkMax(3, MotorType.kBrushless);
+    FLM = new CANSparkMax(4, MotorType.kBrushless);
+    m_leftDrive = new SpeedControllerGroup(FLM, RLM);
+    m_driveTrain = new DifferentialDrive(m_leftDrive, m_rightDrive);
+    */
     m_joystick = new XboxController(0);
 
   }
@@ -129,6 +141,7 @@ public class Robot extends TimedRobot {
       case kDefaultAuto:
       default:
         // Put default auto code here
+        System.out.println("we are in auto");
         break;
     }
   }
@@ -138,22 +151,29 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-    
+   
+    // comment one of these drivetrains out or bad things will happen
+    // m_driveTrain.tankDrive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(5));
+    // m_driveTrain.arcadeDrive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(0));
+
     if (m_joystick.getXButton()) {
       // System.out.println("The talon is running");
-      m_climberMotor.set(ControlMode.PercentOutput, 1);
+      m_turretMotor.set(ControlMode.PercentOutput, -1);
+    }
+    else if (m_joystick.getBButton()) {
+      m_turretMotor.set(ControlMode.PercentOutput, 1);
     }
     else {
-      m_climberMotor.set(ControlMode.PercentOutput, 0);
+      m_turretMotor.set(ControlMode.PercentOutput, 0);
     }
 
     if (m_joystick.getYButton()) {
       // System.out.println("The spark is running");
       // System.out.println("Velocity is " + m_encoder.getVelocity());
-      m_motors.set(-1);    
+      // m_motors.set(-1);    
     }
     else {
-      m_motors.set(0);
+      // m_motors.set(0);
       // System.out.println("Not Running!!");
       // System.out.println("Velocity is " + m_encoder.getVelocity());
     }
@@ -162,17 +182,24 @@ public class Robot extends TimedRobot {
     // System.out.println("ty: " + m_vision.getAngleY());
   
 
-  // if (m_joystick.getAButton()) {
-    //must indent again with button added
-  if (m_vision.getAngleX() < -2.5) {
-     System.out.println("We move left");
-    }
-   if (m_vision.getAngleX() > 2.5) {
-     System.out.println("We move right");
-    }
-   if (m_vision.getAngleX() < 2.5 && m_vision.getAngleX() > -2.5) {
-     System.out.println("We shoot!!!!");
-     m_motors.set(-.75);
+    if (m_joystick.getAButton()) {
+    
+      if (m_vision.isThereTarget() == 1.0) {
+    
+        if (m_vision.getAngleX() < -2.5) {
+          System.out.println("We move left");
+        }
+        if (m_vision.getAngleX() > 2.5) {
+          System.out.println("We move right");
+        }
+        if (m_vision.getAngleX() < 2.5 && m_vision.getAngleX() > -2.5) {
+          System.out.println("We shoot!!!!");
+          // m_motors.set(-.75);
+        }
+      }
+      else {
+        System.out.println("I am flashBANGED");
+      }
     }
 
   }

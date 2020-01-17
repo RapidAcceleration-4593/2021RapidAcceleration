@@ -23,4 +23,8 @@ public class Vision {
     public double getSkew() {
         return table.getEntry("ts").getDouble(0);
     }
+
+    public double isThereTarget() {
+        return table.getEntry("tv").getDouble(0);
+    }
  }
