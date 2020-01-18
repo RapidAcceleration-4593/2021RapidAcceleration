@@ -26,4 +26,8 @@ public class Constants {
         public static final int climberMotor1Port = 8;
     }
 
+    public class controllers {
+        public static final int controllerOnePort = 0;
+    }
+
 }

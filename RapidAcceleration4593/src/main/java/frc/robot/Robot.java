@@ -37,18 +37,13 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  //private static final int kMotorPort = 1;
-  //private static final int kJoystickPort = 1;
-
   public CANSparkMax m_motor;
   public CANEncoder m_encoder;
   public CANSparkMax m_motor2;
   public SpeedControllerGroup m_motors;
-  public XboxController m_joystick;
   public TalonSRX m_turretMotor;
   public TalonSRX m_climberMotor;
-  public Vision m_vision;
-  public CANPIDController m_PIDTest;
+  
   
   public CANSparkMax FRM;
   public CANSparkMax RRM;
@@ -57,6 +52,11 @@ public class Robot extends TimedRobot {
   public SpeedControllerGroup m_rightDrive;
   public SpeedControllerGroup m_leftDrive;
   public DifferentialDrive m_driveTrain;
+
+  public Vision m_vision;
+  public CANPIDController m_PIDTest;
+
+  public XboxController m_joystick;
 
   /**
    * This function is run when the robot is first started up and should be
@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
     m_leftDrive = new SpeedControllerGroup(FLM, RLM);
     m_driveTrain = new DifferentialDrive(m_leftDrive, m_rightDrive);
     */
-    m_joystick = new XboxController(0);
+    m_joystick = new XboxController(Constants.controllers.controllerOnePort);
 
   }
 
@@ -109,6 +109,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+
   }
 
   /**
@@ -183,18 +184,23 @@ public class Robot extends TimedRobot {
   
 
     if (m_joystick.getAButton()) {
-    
+
       if (m_vision.isThereTarget() == 1.0) {
     
+        System.out.println("Seeking");
+
         if (m_vision.getAngleX() < -2.5) {
           System.out.println("We move left");
+          m_turretMotor.set(ControlMode.PercentOutput, .75);
         }
         if (m_vision.getAngleX() > 2.5) {
           System.out.println("We move right");
+          m_turretMotor.set(ControlMode.PercentOutput, -.75);
         }
         if (m_vision.getAngleX() < 2.5 && m_vision.getAngleX() > -2.5) {
           System.out.println("We shoot!!!!");
           // m_motors.set(-.75);
+          m_turretMotor.set(ControlMode.PercentOutput, 0);
         }
       }
       else {
