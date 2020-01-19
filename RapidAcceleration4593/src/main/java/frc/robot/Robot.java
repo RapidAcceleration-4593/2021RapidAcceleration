@@ -37,10 +37,10 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  public CANSparkMax m_motor;
+  public CANSparkMax m_shooterMotorOne;
   public CANEncoder m_encoder;
-  public CANSparkMax m_motor2;
-  public SpeedControllerGroup m_motors;
+  public CANSparkMax m_shooterMotorTwo;
+  public SpeedControllerGroup m_shooterMotors;
   public TalonSRX m_turretMotor;
   public TalonSRX m_climberMotor;
   
@@ -69,32 +69,34 @@ public class Robot extends TimedRobot {
     SmartDashboard.putData("Auto choices", m_chooser);
 
     System.out.println("Init");
-    /*
-    m_motor = new CANSparkMax(Constants.shooter.shooterLeftPort, MotorType.kBrushless);
-    m_motor.setSmartCurrentLimit(39);
-    m_motor.setSecondaryCurrentLimit(40);
-    // m_motor2 = new CANSparkMax(Constants.shooter.shooterRightPort, MotorType.kBrushless);
-    m_motor2.setSmartCurrentLimit(39);
-    m_motor2.setSecondaryCurrentLimit(40);
-    m_encoder = new CANEncoder(m_motor);
-    // m_motors = new SpeedControllerGroup(m_motor, m_motor2);
-    // m_climberMotor = new TalonSRX(Constants.climber.climberMotor1Port);
-    */
+    
+    m_shooterMotorOne = new CANSparkMax(Constants.shooter.shooterLeftPort, MotorType.kBrushless);
+    m_shooterMotorOne.setSmartCurrentLimit(39);
+    m_shooterMotorOne.setSecondaryCurrentLimit(40);
+    m_shooterMotorTwo = new CANSparkMax(Constants.shooter.shooterRightPort, MotorType.kBrushless);
+    m_shooterMotorTwo.setSmartCurrentLimit(39);
+    m_shooterMotorTwo.setSecondaryCurrentLimit(40);
+    m_encoder = new CANEncoder(m_shooterMotorOne);
+    m_shooterMotors = new SpeedControllerGroup(m_shooterMotorOne, m_shooterMotorTwo);
+    m_climberMotor = new TalonSRX(Constants.climber.climberMotor1Port);
+
     m_turretMotor = new TalonSRX(Constants.shooter.turretPort);
     m_vision = new Vision();
-    //m_PIDTest = new CANPIDController(m_motor);
+    m_PIDTest = new CANPIDController(m_shooterMotorOne);
 
-    // m_PIDTest.setFF(Constants.shooter.shooterFF);
-    // m_PIDTest.setP(.00001);
+    m_PIDTest.setFF(Constants.shooter.shooterFF);
+    m_PIDTest.setP(.00001);
 
-    /* FRM = new CANSparkMax(1, MotorType.kBrushless);
-    RRM = new CANSparkMax(2, MotorType.kBrushless);
+    
+    FRM = new CANSparkMax(Constants.driveTrain.FRMPort, MotorType.kBrushless);
+    RRM = new CANSparkMax(Constants.driveTrain.RRMPort, MotorType.kBrushless);
     m_rightDrive = new SpeedControllerGroup(FRM, RRM);
-    RLM = new CANSparkMax(3, MotorType.kBrushless);
-    FLM = new CANSparkMax(4, MotorType.kBrushless);
+    RLM = new CANSparkMax(Constants.driveTrain.RLMPort, MotorType.kBrushless);
+    FLM = new CANSparkMax(Constants.driveTrain.FLMPort, MotorType.kBrushless);
     m_leftDrive = new SpeedControllerGroup(FLM, RLM);
     m_driveTrain = new DifferentialDrive(m_leftDrive, m_rightDrive);
-    */
+    m_driveTrain.setRightSideInverted(true);
+    
     m_joystick = new XboxController(Constants.controllers.controllerOnePort);
 
   }
@@ -152,13 +154,14 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
-   
+
     // comment one of these drivetrains out or bad things will happen
-    // m_driveTrain.tankDrive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(5));
+    m_driveTrain.tankDrive(-m_joystick.getRawAxis(1), -m_joystick.getRawAxis(5));
     // m_driveTrain.arcadeDrive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(0));
 
+    
     if (m_joystick.getXButton()) {
-      // System.out.println("The talon is running");
+      // System.out.println("Tlhe talon is running");
       m_turretMotor.set(ControlMode.PercentOutput, -1);
     }
     else if (m_joystick.getBButton()) {
@@ -169,14 +172,14 @@ public class Robot extends TimedRobot {
     }
 
     if (m_joystick.getYButton()) {
-      // System.out.println("The spark is running");
-      // System.out.println("Velocity is " + m_encoder.getVelocity());
-      // m_motors.set(-1);    
+      System.out.println("The spark is running");
+      System.out.println("Velocity is " + m_encoder.getVelocity());
+      m_shooterMotors.set(-1);    
     }
     else {
-      // m_motors.set(0);
-      // System.out.println("Not Running!!");
-      // System.out.println("Velocity is " + m_encoder.getVelocity());
+      m_shooterMotors.set(0);
+      System.out.println("Not Running!!");
+      System.out.println("Velocity is " + m_encoder.getVelocity());
     }
    
     // System.out.println("tx: " + m_vision.getAngleX());
@@ -199,7 +202,7 @@ public class Robot extends TimedRobot {
         }
         if (m_vision.getAngleX() < 2.5 && m_vision.getAngleX() > -2.5) {
           System.out.println("We shoot!!!!");
-          // m_motors.set(-.75);
+          m_shooterMotors.set(-.75);
           m_turretMotor.set(ControlMode.PercentOutput, 0);
         }
       }
@@ -207,6 +210,7 @@ public class Robot extends TimedRobot {
         System.out.println("I am flashBANGED");
       }
     }
+    
 
   }
 
