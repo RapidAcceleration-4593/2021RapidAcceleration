@@ -16,6 +16,8 @@ public class Constants {
 
         public static final double shooterFF = .00001;
 
+        public static final double threshold = 1.5;
+
     }
 
     public class intake {
