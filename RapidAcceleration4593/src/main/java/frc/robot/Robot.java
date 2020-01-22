@@ -223,16 +223,16 @@ public class Robot extends TimedRobot {
         // don't need to move
         if (m_vision.getAngleX() < Constants.shooter.threshold && m_vision.getAngleX() > -Constants.shooter.threshold) {
           System.out.println("We shoot!!!!");
-          m_shooterMotors.set(.5);
+          m_shooterMotors.set(.55);
           m_turretMotor.set(ControlMode.PercentOutput, 0);
         } else { // need to move
           if (m_vision.getAngleX() < -Constants.shooter.threshold) {
             System.out.println("We move left");
-            m_turretMotor.set(ControlMode.PercentOutput, .75);
+            m_turretMotor.set(ControlMode.PercentOutput, .65);
           }
           if (m_vision.getAngleX() > Constants.shooter.threshold) {
             System.out.println("We move right");
-            m_turretMotor.set(ControlMode.PercentOutput, -.75);
+            m_turretMotor.set(ControlMode.PercentOutput, -.65);
           }
         }
       } else {
