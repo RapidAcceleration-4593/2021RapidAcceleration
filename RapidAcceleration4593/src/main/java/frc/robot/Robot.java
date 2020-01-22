@@ -11,20 +11,21 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import com.revrobotics.AlternateEncoderType;
+//import com.revrobotics.AlternateEncoderType;
 import com.revrobotics.CANEncoder;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.EncoderType;
+//import com.revrobotics.EncoderType;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.CAN;
+//import edu.wpi.first.wpilibj.CAN;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.XboxController;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import frc.robot.Vision;
+//import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants;
 
 
@@ -48,20 +49,21 @@ public class Robot extends TimedRobot {
   public TalonSRX m_turretMotor;
   public TalonSRX m_climberMotor;
   
-  public CANSparkMax FRM;
-  public CANSparkMax RRM;
-  public CANSparkMax FLM;
-  public CANSparkMax RLM;
-  public SpeedControllerGroup m_rightDrive;
-  public SpeedControllerGroup m_leftDrive;
-  public DifferentialDrive m_driveTrain;
+  // public CANSparkMax FRM;
+  // public CANSparkMax RRM;
+  // public CANSparkMax FLM;
+  // public CANSparkMax RLM;
+  // public SpeedControllerGroup m_rightDrive;
+  // public SpeedControllerGroup m_leftDrive;
+  // public DifferentialDrive m_driveTrain;
 
   public Vision m_vision;
+  public DriveTrain m_DriveTrain;
   public CANPIDController m_PIDTest;
   public CANPIDController m_rightSidePID;
   public CANPIDController m_leftSidePID;
-  public CANEncoder m_rightSideEncoder;
-  public CANEncoder m_leftSideEncoder;
+  // public CANEncoder m_rightSideEncoder;
+  // public CANEncoder m_leftSideEncoder;
 
   public XboxController m_joystick;
 
@@ -89,13 +91,14 @@ public class Robot extends TimedRobot {
 
     m_turretMotor = new TalonSRX(Constants.shooter.turretPort);
     m_vision = new Vision();
+    m_DriveTrain = new DriveTrain();
     m_PIDTest = new CANPIDController(m_shooterMotorLeft);
 
     m_PIDTest.setFF(Constants.shooter.shooterFF);
     m_PIDTest.setP(.00001);
 
     
-    FRM = new CANSparkMax(Constants.driveTrain.FRMPort, MotorType.kBrushless);
+    /*FRM = new CANSparkMax(Constants.driveTrain.FRMPort, MotorType.kBrushless);
     RRM = new CANSparkMax(Constants.driveTrain.RRMPort, MotorType.kBrushless);
     m_rightDrive = new SpeedControllerGroup(FRM, RRM);
     RLM = new CANSparkMax(Constants.driveTrain.RLMPort, MotorType.kBrushless);
@@ -118,7 +121,7 @@ public class Robot extends TimedRobot {
     m_rightSidePID.setFF(.00015);
     m_rightSidePID.setP(.00035);
     m_rightSidePID.setI(0);
-    m_rightSidePID.setD(0);
+    m_rightSidePID.setD(0);*/
 
     m_joystick = new XboxController(Constants.controllers.controllerOnePort);
 
@@ -179,9 +182,9 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     // comment one of these drivetrains out or bad things will happen
-   m_driveTrain.tankDrive(-m_joystick.getRawAxis(1), -m_joystick.getRawAxis(5));
+    //m_driveTrain.tankDrive(-m_joystick.getRawAxis(1), -m_joystick.getRawAxis(5));
     // m_driveTrain.arcadeDrive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(0));
-
+    m_DriveTrain.drive(m_joystick.getRawAxis(1),m_joystick.getRawAxis(5));
     // System.out.println("Right side RPM = " + m_rightSideEncoder.getVelocity());
     // System.out.println("Left side RPM = " + m_leftSideEncoder.getVelocity());
 
