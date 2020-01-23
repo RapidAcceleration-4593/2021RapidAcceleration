@@ -17,6 +17,7 @@ public class Turret{
     public TalonSRX m_turretMotor;
     public TalonSRX m_climberMotor;
     public CANPIDController m_PIDTest;  
+
     public Turret() {
         m_shooterMotorLeft = new CANSparkMax(Constants.shooter.shooterLeftPort, MotorType.kBrushless);
         m_shooterMotorLeft.setSmartCurrentLimit(39);
@@ -43,17 +44,17 @@ public class Turret{
         System.out.println("Velocity is " + m_shooterShaftEncoder.getVelocity());
     }
 
-    //when amount = 0 then 100% of "to"
-    //when amount = 1 then 100% of "from"
-    //when amount = 0.5 then 50% of "to" and "from"
+    // when amount = 0 then 100% of "to"
+    // when amount = 1 then 100% of "from"
+    // when amount = 0.5 then 50% of "to" and "from"
     public double lerp(double to, double from, double amount) {
         double result = (1 - amount) * to + amount * from;
 
         if (result > 1) {
-            result = .6; //this is the max speed of the motor
+            result = .6; // this is the max speed of the motor
         }
         else if (result < -1) {
-            result = -.6; //inverse max speed
+            result = -.6; // inverse max speed
         }
         // else if(result < 0.01 || result > -0.01){
         //     result = 0; //within threshold

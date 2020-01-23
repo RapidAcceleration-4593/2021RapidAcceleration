@@ -1,17 +1,11 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
-
-import edu.wpi.first.wpilibj.*;
-
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-
 import com.revrobotics.CANPIDController;
-
 import com.revrobotics.CANEncoder;
-
 import frc.robot.Constants;
-
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 public class DriveTrain{
@@ -42,6 +36,7 @@ public class DriveTrain{
         m_leftSideEncoder = new CANEncoder(FLM);
         m_driveTrain = new DifferentialDrive(m_leftDrive, m_rightDrive);
         m_driveTrain.setRightSideInverted(true);
+        m_driveTrain.setDeadband(.03);
         
         m_leftSidePID.setOutputRange(-1, 1);
         m_leftSidePID.setFF(.00015);
@@ -64,5 +59,9 @@ public class DriveTrain{
         //will need to another function and called from the other mode.
         // m_driveTrain.arcadeDrive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(0));
     } 
+
+    public void arcadeDrive (double a1, double a2) {
+        m_driveTrain.arcadeDrive(a1, a2);
+    }
 
 }
