@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -18,6 +20,7 @@ import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants;
 import frc.robot.subsystems.Turret;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -42,6 +45,8 @@ public class Robot extends TimedRobot {
 
   public XboxController m_joystick;
 
+  public DigitalInput m_limitSwitchLeft;
+  public DigitalInput m_limitSwitchRight;
   /**
    * This function is run when the robot is first started up and should be
    * used for any initialization code.
@@ -62,6 +67,8 @@ public class Robot extends TimedRobot {
 
     m_joystick = new XboxController(Constants.controllers.controllerOnePort);
 
+    m_limitSwitchLeft = new DigitalInput(0);
+    m_limitSwitchRight = new DigitalInput(1);
   }
 
   /**
@@ -122,11 +129,11 @@ public class Robot extends TimedRobot {
     m_DriveTrain.drive(m_joystick.getRawAxis(1),m_joystick.getRawAxis(5));
     // m_DriveTrain.arcadeDrive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(0));
 
-    if (m_joystick.getXButton()) {
-      m_Turret.Turn(-1);
+    if (m_joystick.getBumper(Hand.kRight)) {
+      m_Turret.Turn(-.75);
     }
-    else if (m_joystick.getBButton()) {
-      m_Turret.Turn(1);
+    else if (m_joystick.getBumper(Hand.kLeft)) {
+      m_Turret.Turn(.75);
     }
     else {
       m_Turret.Turn(0);
@@ -134,7 +141,7 @@ public class Robot extends TimedRobot {
 
     // shooting 
     if (m_joystick.getYButton()) {
-      m_Turret.Shoot(.6); 
+      m_Turret.Shoot(1); 
     }
     else {
       m_Turret.Shoot(0); 
@@ -142,46 +149,65 @@ public class Robot extends TimedRobot {
   
     // controlling the turret with vision 
     // need to stabilize the limelight mount! (mechanical problem) 
+
+    double lastDirection = -.8;
+
     if (m_joystick.getAButton()) {
       if (m_vision.isThereTarget() == 1.0) {
 
         System.out.println("Seeking");
 
-        double lerpResult = m_Turret.lerp(0, m_vision.getAngleX(), 0.25);
+        double lerpResult = m_Turret.lerp(-1, m_vision.getAngleX(), 0.25);
         System.out.println("lerp result is: " + lerpResult);
         m_Turret.Turn(-lerpResult);
         
         //shoot but stop turret
         if (-lerpResult < .4 && -lerpResult > -.4) {
-          m_Turret.Shoot(.5);
+          m_Turret.Shoot(.9);
           m_Turret.Turn(-lerpResult);
         }
-
-        //shoot and move turret
-        //if lerpResult == 1
-        //only move the turret
+        else if (m_limitSwitchLeft.get() == false || m_limitSwitchRight.get() == false){
+          m_Turret.Turn(0);
+          System.out.println("We have a limit switch pressed");
+        }
 
       } 
       else {
         System.out.println("I am flashBANGED");
-        // eventually will have seeking code here 
+        if (m_limitSwitchRight.get() == false) {
+          m_Turret.Turn(.8);
+          lastDirection = .8;
+        }
+        else if (m_limitSwitchLeft.get() == false) {
+          m_Turret.Turn((-.8));
+          lastDirection = -.8;
+        }
+        else {
+          m_Turret.Turn(lastDirection);
+        }
       }
     }
     
     double ultrasonicSensorValue = m_ultrasonic.getVoltage();
     final double scaleFactor = 1/(5./1024.);
     double distance = 5 * ultrasonicSensorValue * scaleFactor;
-    double convertedValue = distance / 25.4;
+    double convertedValue = distance / 25.4/12;
     System.out.println("The value of the ultrasonic sensor is: " + convertedValue);
 
     // will eventually put into its own subsystem
-    if (m_joystick.getStartButton()){
-      m_intakeMotor.set(ControlMode.PercentOutput, -.5);
+    if (m_joystick.getStartButton()){ 
+      m_intakeMotor.set(ControlMode.PercentOutput, -.9);
     }
     else {
       m_intakeMotor.set(ControlMode.PercentOutput, 0);
     }
+
+    System.out.println("Left limit switch: " + m_limitSwitchLeft.get());
+    System.out.println("Right limit switch: " + m_limitSwitchRight.get());
+
   }
+
+
 
   /**
    * This function is called periodically during test mode.
