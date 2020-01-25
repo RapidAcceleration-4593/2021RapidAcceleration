@@ -22,6 +22,8 @@ public class DriveTrain{
     public CANEncoder m_rightSideEncoder;
     public CANEncoder m_leftSideEncoder;
 
+    double rotations = 0;
+
 
     public DriveTrain (){
         FRM = new CANSparkMax(Constants.driveTrain.FRMPort, MotorType.kBrushless);
@@ -49,6 +51,12 @@ public class DriveTrain{
         m_rightSidePID.setP(.00035);
         m_rightSidePID.setI(0);
         m_rightSidePID.setD(0);
+
+        // FRM.burnFlash();
+        // FLM.burnFlash();
+
+        m_leftSideEncoder.setPosition(0);
+
     }
 
     public void drive(double a1, double a2){
@@ -63,5 +71,10 @@ public class DriveTrain{
     public void arcadeDrive (double a1, double a2) {
         m_driveTrain.arcadeDrive(a1, a2);
     }
-
+    
+    public double encoderValue() {
+        System.out.println("Encoder position is: " + m_leftSideEncoder.getPosition());
+        rotations = m_leftSideEncoder.getPosition();
+        return rotations;
+    }
 }

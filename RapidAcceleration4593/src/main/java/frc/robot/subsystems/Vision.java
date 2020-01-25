@@ -6,6 +6,7 @@ public class Vision {
     private NetworkTable table;
     public Vision() {
         table=NetworkTableInstance.getDefault().getTable("limelight");
+        NetworkTableInstance.getDefault().getTable("limelight").getEntry("<variablename>").setNumber(1);
     }
 
     public double getAngleX() {
@@ -27,4 +28,8 @@ public class Vision {
     public double isThereTarget() {
         return table.getEntry("tv").getDouble(0);
     }
- }
+
+    public void lightOff() {
+        
+    }
+}

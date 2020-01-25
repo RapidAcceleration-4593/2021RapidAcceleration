@@ -18,14 +18,18 @@ public class Constants {
 
         public static final double threshold = .5;
 
+        public static final double turnSpeed = .8;
+
     }
 
     public class intake {
-
+        public static final int intakeMotorPort = 6;
+        public static final int hopperMotorPort = 9;
+        public static final int intoShooterMotorPort = 10;
     }
 
     public class climber {
-        public static final int climberMotor1Port = 3;
+        public static final int climberMotor1Port = 7;
     }
 
     public class controllers {
