@@ -29,7 +29,11 @@ public class Vision {
         return table.getEntry("tv").getDouble(0);
     }
 
-    public void lightOff() {
-        
+    public boolean lightOff() {
+        return table.getEntry("ledMode").setNumber(1);
+    }
+
+    public boolean lightOn() {
+        return table.getEntry("ledMode").setNumber(3);
     }
 }

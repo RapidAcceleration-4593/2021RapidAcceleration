@@ -165,9 +165,9 @@ public class Robot extends TimedRobot {
     System.out.println(m_DriveTrain.encoderValue());
 
     if (m_joystick.getBumper(Hand.kRight)) {
-      m_Turret.Turn(-.75);
+      m_Turret.Turn(-1);
     } else if (m_joystick.getBumper(Hand.kLeft)) {
-      m_Turret.Turn(.75);
+      m_Turret.Turn(1);
     } else {
       m_Turret.Turn(0);
     }
@@ -175,17 +175,21 @@ public class Robot extends TimedRobot {
     // shooting
     if (m_joystick.getYButton()) {
       m_Turret.Shoot(1);
+      m_intoShooterMotor.set(ControlMode.PercentOutput, 1);
     } 
     else {
       m_Turret.Shoot(0);
+      m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
     }
 
     // controlling the turret with vision
     // need to stabilize the limelight mount! (mechanical problem)
 
     if (m_joystick.getAButton()) {
-        
-      if (m_vision.isThereTarget() == 1.0) {
+
+        m_vision.lightOn();
+
+      if (m_vision.isThereTarget() == 1.0 && (m_Turret.leftLimitPressed() == true && m_Turret.rightlimitPressed() == true)) {
 
         double lerpResult = m_Turret.lerp(0, m_vision.getAngleX(), 0.2);
         System.out.println("lerp result is: " + lerpResult);
@@ -198,12 +202,20 @@ public class Robot extends TimedRobot {
         }
       
       }
+      else if (m_Turret.leftLimitPressed() == false) {
+        m_Turret.Turn(0);
+        System.out.println("Left limit reached");
+      }
+      else if (m_Turret.rightlimitPressed() == false) {
+        m_Turret.Turn(0);
+        System.out.println("Right limit reached");
+      }
       else {
         m_Turret.seek();
       }
     }
     else {
-      System.out.println("led off");
+      m_vision.lightOff();
     }
     
 
@@ -228,7 +240,7 @@ public class Robot extends TimedRobot {
     }
 
     if (m_joystick.getXButton()) {
-      m_hopperMotor.set(ControlMode.PercentOutput, 1);
+      m_hopperMotor.set(ControlMode.PercentOutput, -.5);
     }
     else {
       m_hopperMotor.set(ControlMode.PercentOutput, 0);

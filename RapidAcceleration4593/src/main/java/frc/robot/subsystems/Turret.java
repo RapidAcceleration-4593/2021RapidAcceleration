@@ -61,7 +61,8 @@ public class Turret {
 
         if (result > 1) {
             result = Constants.shooter.turnSpeed; // this is the max speed of the motor
-        } else if (result < -1) {
+        }
+        else if (result < -1) {
             result = -Constants.shooter.turnSpeed; // inverse max speed
         }
         // else if(result < 0.01 || result > -0.01){
@@ -86,4 +87,23 @@ public class Turret {
             Turn(lastDirection);
         }
     }
+
+    public boolean leftLimitPressed() {
+        if (m_limitSwitchLeft.get() == false) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
+    public boolean rightlimitPressed() {
+        if (m_limitSwitchRight.get() == false) {
+            return false;
+        }
+        else {
+            return true;
+        }
+    }
+
 }

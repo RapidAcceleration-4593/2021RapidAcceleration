@@ -24,8 +24,8 @@ public class Constants {
 
     public class intake {
         public static final int intakeMotorPort = 6;
-        public static final int hopperMotorPort = 9;
-        public static final int intoShooterMotorPort = 10;
+        public static final int hopperMotorPort = 2;
+        public static final int intoShooterMotorPort = 3;
     }
 
     public class climber {
