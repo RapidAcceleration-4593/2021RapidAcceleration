@@ -22,6 +22,7 @@ import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants;
 import frc.robot.subsystems.Turret;
+import frc.robot.subsystems.Intake;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -39,18 +40,19 @@ public class Robot extends TimedRobot {
   public Vision m_vision;
   public DriveTrain m_DriveTrain;
   public Turret m_Turret;
+  public Intake m_Intake;
 
-  public TalonSRX m_intakeMotor;
+
   public TalonSRX m_climberMotor;
 
-  public TalonSRX m_hopperMotor;
-  public TalonSRX m_intoShooterMotor;
+ 
 
   public AnalogInput m_ultrasonic;
 
   public CANEncoder m_driveEncoder;
 
-  public XboxController m_joystick;
+  public XboxController m_mainController;
+  public XboxController m_auxController; 
 
   // public DigitalInput m_limitSwitchLeft;
   // public DigitalInput m_limitSwitchRight;
@@ -68,15 +70,16 @@ public class Robot extends TimedRobot {
     m_vision = new Vision();
     m_DriveTrain = new DriveTrain();
     m_Turret = new Turret();
+    m_Intake = new Intake();
 
     m_ultrasonic = new AnalogInput(0);
 
-    m_intakeMotor = new TalonSRX(Constants.intake.intakeMotorPort);
+    
     m_climberMotor = new TalonSRX(Constants.climber.climberMotor1Port);
-    m_hopperMotor = new TalonSRX(Constants.intake.hopperMotorPort);
-    m_intoShooterMotor = new TalonSRX(Constants.intake.intoShooterMotorPort);
+    
 
-    m_joystick = new XboxController(Constants.controllers.controllerOnePort);
+    m_mainController = new XboxController(Constants.controllers.mainControllerPort);
+    m_auxController = new XboxController(Constants.controllers.auxControllerPort);
 
     // m_limitSwitchLeft = new DigitalInput(0);
     // m_limitSwitchRight = new DigitalInput(1);
@@ -160,36 +163,77 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
 
     // different methods of driving
-    m_DriveTrain.drive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(5));
-    // m_DriveTrain.arcadeDrive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(0));
-    System.out.println(m_DriveTrain.encoderValue());
+    m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
+    // m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(0));
+    // System.out.println(m_DriveTrain.encoderValue());
 
-    if (m_joystick.getBumper(Hand.kRight)) {
+    //bumpers
+    if (m_mainController.getBumper(Hand.kRight)) {
       m_Turret.Turn(-1);
-    } else if (m_joystick.getBumper(Hand.kLeft)) {
+    } else if (m_mainController.getBumper(Hand.kLeft)) {
       m_Turret.Turn(1);
     } else {
       m_Turret.Turn(0);
     }
 
-    // shooting
-    if (m_joystick.getYButton()) {
+    // shooting manual
+    //b
+    if (m_auxController.getStartButton()) {
       m_Turret.Shoot(1);
-      m_intoShooterMotor.set(ControlMode.PercentOutput, 1);
+      /// m_Intake.liftHopper(1, .5);
+      m_Intake.liftHopper(1, .5);
     } 
+    else if (m_auxController.getBButton()) {
+      m_Intake.intakeHopper(.625, .5);
+    }
+    else if (m_auxController.getXButton()) { // just a smidge
+      m_Intake.intakeHopper(0, -.25);
+    }
     else {
       m_Turret.Shoot(0);
-      m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
+      m_Intake.liftHopper(0, 0);
+      m_Intake.intakeHopper(0, 0);
     }
 
+    //if A is pressed
+    track();
+
+    if (m_auxController.getYButton()) {
+      m_climberMotor.set(ControlMode.PercentOutput, 1);
+    }
+    else if (m_auxController.getBackButton()) {
+      m_climberMotor.set(ControlMode.PercentOutput, -1);
+    }
+    else {
+      m_climberMotor.set(ControlMode.PercentOutput, 0);
+    }
+
+    double ultrasonicSensorValue = m_ultrasonic.getVoltage();
+    final double scaleFactor = 1 / (5. / 1024.);
+    double distance = 5 * ultrasonicSensorValue * scaleFactor;
+    double convertedValue = distance / 25.4;
+
+    // will eventually put into its own subsystem
+
+}
+
+  /**
+   * This function is called periodically during test mode.
+   */
+  @Override
+  public void testPeriodic() {
+  }
+
+  public void track()
+  {
     // controlling the turret with vision
     // need to stabilize the limelight mount! (mechanical problem)
-
-    if (m_joystick.getAButton()) {
+    if (m_auxController.getAButton()) {
 
         m_vision.lightOn();
 
-      if (m_vision.isThereTarget() == 1.0 && (m_Turret.leftLimitPressed() == true && m_Turret.rightlimitPressed() == true)) {
+      if (m_vision.isThereTarget() == 1.0 && 
+      (m_Turret.leftLimitPressed() == true && m_Turret.rightlimitPressed() == true)) {
 
         double lerpResult = m_Turret.lerp(0, m_vision.getAngleX(), 0.2);
         System.out.println("lerp result is: " + lerpResult);
@@ -197,8 +241,16 @@ public class Robot extends TimedRobot {
 
         // shoot but stop turret
         if (-lerpResult < .5 && -lerpResult > -.5) {
-          m_Turret.Shoot(.75);
+          // m_Turret.Shoot(.75);
           m_Turret.Turn(-lerpResult);
+          
+          // still increases speed, checks when to activate lift and hopper based on shooter rpm
+          if (m_Turret.Shoot(.75)) {
+            m_Intake.liftHopper(1, .5); 
+          }
+          else {
+            m_Intake.liftHopper(0, 0);
+          }
         }
       
       }
@@ -217,49 +269,6 @@ public class Robot extends TimedRobot {
     else {
       m_vision.lightOff();
     }
-    
-
-    double ultrasonicSensorValue = m_ultrasonic.getVoltage();
-    final double scaleFactor = 1 / (5. / 1024.);
-    double distance = 5 * ultrasonicSensorValue * scaleFactor;
-    double convertedValue = distance / 25.4;
-
-    // will eventually put into its own subsystem
-    if (m_joystick.getStartButton()) {
-      m_intakeMotor.set(ControlMode.PercentOutput, -.625);
-    } 
-    else {
-      m_intakeMotor.set(ControlMode.PercentOutput, 0);
-    }
-
-    if (m_joystick.getBackButton()) {
-      m_climberMotor.set(ControlMode.PercentOutput, 1);
-    }
-    else {
-      m_climberMotor.set(ControlMode.PercentOutput, 0);
-    }
-
-    if (m_joystick.getXButton()) {
-      m_hopperMotor.set(ControlMode.PercentOutput, -.5);
-    }
-    else {
-      m_hopperMotor.set(ControlMode.PercentOutput, 0);
-    }
-
-    if (m_joystick.getBButton()) {
-      m_intoShooterMotor.set(ControlMode.PercentOutput, 1);
-    }
-    else {
-      m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
-    }
-
-}
-
-  /**
-   * This function is called periodically during test mode.
-   */
-  @Override
-  public void testPeriodic() {
   }
 
 }

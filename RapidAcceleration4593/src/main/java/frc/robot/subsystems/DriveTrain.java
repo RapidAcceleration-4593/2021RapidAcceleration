@@ -62,14 +62,10 @@ public class DriveTrain{
     public void drive(double a1, double a2){
         // comment one of these drivetrains out or bad things will happen
         m_driveTrain.tankDrive(-a1, -a2);
-        
-        //the below code is for a different mode...
-        //will need to another function and called from the other mode.
-        // m_driveTrain.arcadeDrive(m_joystick.getRawAxis(1), m_joystick.getRawAxis(0));
-    } 
+    }
 
     public void arcadeDrive (double a1, double a2) {
-        m_driveTrain.arcadeDrive(a1, a2);
+        m_driveTrain.arcadeDrive(-a1, a2);
     }
     
     public double encoderValue() {

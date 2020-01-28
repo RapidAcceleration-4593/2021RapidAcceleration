@@ -24,7 +24,7 @@ public class Constants {
 
     public class intake {
         public static final int intakeMotorPort = 6;
-        public static final int hopperMotorPort = 2;
+        public static final int hopperMotorPort = 4;
         public static final int intoShooterMotorPort = 3;
     }
 
@@ -33,7 +33,8 @@ public class Constants {
     }
 
     public class controllers {
-        public static final int controllerOnePort = 0;
+        public static final int mainControllerPort = 0;
+        public static final int auxControllerPort = 1;
     }
 
 }

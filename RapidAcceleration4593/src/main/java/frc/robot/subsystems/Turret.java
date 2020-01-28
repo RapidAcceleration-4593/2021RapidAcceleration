@@ -45,12 +45,14 @@ public class Turret {
         m_turretMotor.set(ControlMode.PercentOutput, amount);
     }
 
-    public void Shoot(double amount) {
+    public boolean Shoot(double amount) {
+        boolean isToSpeed = false;
         m_shooterMotors.set(amount);
-        if(m_shooterShaftEncoder.getVelocity() < 3600)
-        {
-            System.out.println("Velocity is " + m_shooterShaftEncoder.getVelocity());
-         }
+        if(m_shooterShaftEncoder.getVelocity() > 3800) {
+            isToSpeed = true;
+        }
+        return isToSpeed;
+        // memememememememememem
     }
 
     // when amount = 0 then 100% of "to"
@@ -107,3 +109,4 @@ public class Turret {
     }
 
 }
+
