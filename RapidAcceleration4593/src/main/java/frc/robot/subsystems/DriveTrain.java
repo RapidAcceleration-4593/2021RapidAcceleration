@@ -7,6 +7,7 @@ import com.revrobotics.CANEncoder;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.AnalogInput;
 
 public class DriveTrain{
    
@@ -21,6 +22,8 @@ public class DriveTrain{
     public CANPIDController m_leftSidePID;
     public CANEncoder m_rightSideEncoder;
     public CANEncoder m_leftSideEncoder;
+
+    public AnalogInput m_ultrasonic;
 
     double rotations = 0;
 
@@ -56,7 +59,7 @@ public class DriveTrain{
         // FLM.burnFlash();
 
         m_leftSideEncoder.setPosition(0);
-
+        m_ultrasonic = new AnalogInput(Constants.driveTrain.ultrasonicPort);
     }
 
     public void drive(double a1, double a2){
@@ -72,5 +75,14 @@ public class DriveTrain{
         System.out.println("Encoder position is: " + m_leftSideEncoder.getPosition());
         rotations = m_leftSideEncoder.getPosition();
         return rotations;
+    }
+
+    public double readDistance() {
+        double ultrasonicSensorValue = m_ultrasonic.getVoltage();
+        final double scaleFactor = 1 / (5. / 1024.);
+        double distance = 5 * ultrasonicSensorValue * scaleFactor;
+        double convertedValue = distance / (25.4 * 12);
+
+        return convertedValue;
     }
 }

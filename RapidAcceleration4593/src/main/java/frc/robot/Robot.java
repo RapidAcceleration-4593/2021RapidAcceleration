@@ -35,22 +35,17 @@ public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
+
+  public static long m_autoSecs = 0;
+
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   public Vision m_vision;
   public DriveTrain m_DriveTrain;
   public Turret m_Turret;
   public Intake m_Intake;
-
-
   public TalonSRX m_climberMotor;
-
- 
-
-  public AnalogInput m_ultrasonic;
-
   public CANEncoder m_driveEncoder;
-
   public XboxController m_mainController;
   public XboxController m_auxController; 
 
@@ -72,11 +67,7 @@ public class Robot extends TimedRobot {
     m_Turret = new Turret();
     m_Intake = new Intake();
 
-    m_ultrasonic = new AnalogInput(0);
-
-    
     m_climberMotor = new TalonSRX(Constants.climber.climberMotor1Port);
-    
 
     m_mainController = new XboxController(Constants.controllers.mainControllerPort);
     m_auxController = new XboxController(Constants.controllers.auxControllerPort);
@@ -116,6 +107,7 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    m_autoSecs = System.currentTimeMillis() / 1000;
   }
 
   /**
@@ -130,27 +122,23 @@ public class Robot extends TimedRobot {
     case kDefaultAuto:
     default:
       // Put default auto code here
-
-      System.out.println("we are in auto");
-
-      while (m_DriveTrain.encoderValue() != 0) {
-        m_DriveTrain.drive(.5, -.5);
-      }
-      /*if (m_vision.isThereTarget() == 1.0) {
-
-        double lerpResult = m_Turret.lerp(0, m_vision.getAngleX(), 0.2);
-        System.out.println("lerp result is: " + lerpResult);
-        m_Turret.Turn(-lerpResult);
-
-        // shoot but stop turret
-        if (-lerpResult < .5 && -lerpResult > -.5) {
-          m_Turret.Shoot(.75);
-          m_Turret.Turn(-lerpResult);
+      // first we need optimal sensor
+      if (m_DriveTrain.readDistance() < Constants.autonomous.optimusRange) {
+        m_DriveTrain.drive(-.5, -.5);
+        System.out.println(m_DriveTrain.readDistance());
+      } else {
+        long m_currentSeconds = System.currentTimeMillis() / 1000;
+        m_DriveTrain.drive(0, 0);
+        if ((m_currentSeconds - m_autoSecs) < 5) {
+          track();
+          m_DriveTrain.drive(0, 0);
         }
-      } else { // if it doesn't see the target, seek and look for it
-        m_Turret.seek();
+        else {
+          m_Intake.liftHopper(0, 0);
+          m_Turret.Shoot(0);
+          m_DriveTrain.drive(0, 0);
+        }
       }
-    */
       break;
 
     }
@@ -184,7 +172,7 @@ public class Robot extends TimedRobot {
       m_Intake.liftHopper(1, .5);
     } 
     else if (m_auxController.getBButton()) {
-      m_Intake.intakeHopper(.625, .5);
+      m_Intake.intakeHopper(.3125, .5);
     }
     else if (m_auxController.getXButton()) { // just a smidge
       m_Intake.intakeHopper(0, -.25);
@@ -207,12 +195,7 @@ public class Robot extends TimedRobot {
     else {
       m_climberMotor.set(ControlMode.PercentOutput, 0);
     }
-
-    double ultrasonicSensorValue = m_ultrasonic.getVoltage();
-    final double scaleFactor = 1 / (5. / 1024.);
-    double distance = 5 * ultrasonicSensorValue * scaleFactor;
-    double convertedValue = distance / 25.4;
-
+    System.out.println("Current distance: " + m_DriveTrain.readDistance());
     // will eventually put into its own subsystem
 
 }
@@ -228,7 +211,7 @@ public class Robot extends TimedRobot {
   {
     // controlling the turret with vision
     // need to stabilize the limelight mount! (mechanical problem)
-    if (m_auxController.getAButton()) {
+    //if (m_auxController.getAButton()) {
 
         m_vision.lightOn();
 
@@ -265,10 +248,10 @@ public class Robot extends TimedRobot {
       else {
         m_Turret.seek();
       }
-    }
-    else {
-      m_vision.lightOff();
-    }
+    //}
+    //else {
+    //  m_vision.lightOff();
+    //}
   }
 
 }

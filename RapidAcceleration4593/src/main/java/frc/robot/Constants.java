@@ -6,6 +6,8 @@ public class Constants {
         public static final int RRMPort = 10;
         public static final int FLMPort = 9;
         public static final int RLMPort = 8;
+
+        public static final int ultrasonicPort = 1;
     }
 
     public class shooter {
@@ -35,6 +37,11 @@ public class Constants {
     public class controllers {
         public static final int mainControllerPort = 0;
         public static final int auxControllerPort = 1;
+    }
+
+    public class autonomous {
+        public static final double optimusRange = 10.5;
+        
     }
 
 }
