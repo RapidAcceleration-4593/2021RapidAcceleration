@@ -183,8 +183,12 @@ public class Robot extends TimedRobot {
       m_Intake.intakeHopper(0, 0);
     }
 
-    //if A is pressed
-    track();
+    if (m_auxController.getAButton()) {
+      track();
+    }
+    else {
+      m_vision.lightOff();
+    }
 
     if (m_auxController.getYButton()) {
       m_climberMotor.set(ControlMode.PercentOutput, 1);
@@ -228,7 +232,7 @@ public class Robot extends TimedRobot {
           m_Turret.Turn(-lerpResult);
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
-          if (m_Turret.Shoot(.75)) {
+          if (m_Turret.Shoot(1)) {
             m_Intake.liftHopper(1, .5); 
           }
           else {

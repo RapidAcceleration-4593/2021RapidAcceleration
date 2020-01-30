@@ -51,6 +51,7 @@ public class Turret {
         if(m_shooterShaftEncoder.getVelocity() > 3800) {
             isToSpeed = true;
         }
+        System.out.println("velocity of shooter is:" + m_shooterShaftEncoder.getVelocity());
         return isToSpeed;
         // memememememememememem
     }
