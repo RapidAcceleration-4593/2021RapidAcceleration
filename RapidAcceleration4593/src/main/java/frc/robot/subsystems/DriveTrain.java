@@ -81,7 +81,7 @@ public class DriveTrain{
         double ultrasonicSensorValue = m_ultrasonic.getVoltage();
         final double scaleFactor = 1 / (5. / 1024.);
         double distance = 5 * ultrasonicSensorValue * scaleFactor;
-        double convertedValue = distance / (25.4 * 12);
+        double convertedValue = distance / (305);
 
         return convertedValue;
     }

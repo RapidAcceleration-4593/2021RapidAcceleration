@@ -18,6 +18,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants;
@@ -49,6 +50,7 @@ public class Robot extends TimedRobot {
   public XboxController m_mainController;
   public XboxController m_auxController; 
 
+  public DigitalInput m_breakBeam;
   // public DigitalInput m_limitSwitchLeft;
   // public DigitalInput m_limitSwitchRight;
 
@@ -72,6 +74,7 @@ public class Robot extends TimedRobot {
     m_mainController = new XboxController(Constants.controllers.mainControllerPort);
     m_auxController = new XboxController(Constants.controllers.auxControllerPort);
 
+    m_breakBeam = new DigitalInput(2);
     // m_limitSwitchLeft = new DigitalInput(0);
     // m_limitSwitchRight = new DigitalInput(1);
   }
@@ -123,19 +126,19 @@ public class Robot extends TimedRobot {
     default:
       // Put default auto code here
       // first we need optimal sensor
-      if (m_DriveTrain.readDistance() < Constants.autonomous.optimusRange) {
+      if (m_DriveTrain.encoderValue() < Constants.autonomous.encoderBackUp) {
         m_DriveTrain.drive(-.5, -.5);
-        System.out.println(m_DriveTrain.readDistance());
+        System.out.println(m_DriveTrain.encoderValue());
       } else {
         long m_currentSeconds = System.currentTimeMillis() / 1000;
         m_DriveTrain.drive(0, 0);
-        if ((m_currentSeconds - m_autoSecs) < 5) {
+        if ((m_currentSeconds - m_autoSecs) < 10) {
           track();
           m_DriveTrain.drive(0, 0);
         }
         else {
           m_Intake.liftHopper(0, 0);
-          m_Turret.Shoot(0);
+          m_Turret.Shoot(0, 0);
           m_DriveTrain.drive(0, 0);
         }
       }
@@ -149,6 +152,8 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void teleopPeriodic() {
+
+    // System.out.println("Break beam:" + m_breakBeam.get());
 
     // different methods of driving
     m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
@@ -167,28 +172,32 @@ public class Robot extends TimedRobot {
     // shooting manual
     //b
     if (m_auxController.getStartButton()) {
-      m_Turret.Shoot(1);
+      m_Turret.Shoot(1, 0);
       /// m_Intake.liftHopper(1, .5);
       m_Intake.liftHopper(1, .5);
     } 
     else if (m_auxController.getBButton()) {
-      m_Intake.intakeHopper(.3125, .5);
+      m_Intake.intakeHopper(.574218575, 1);
     }
     else if (m_auxController.getXButton()) { // just a smidge
       m_Intake.intakeHopper(0, -.25);
     }
+    else if (m_auxController.getAButton()) { // must be placed here to keep hopper running, otherwise it sets to 0 when the shoot method is called
+      track();
+    }
     else {
-      m_Turret.Shoot(0);
+      m_Turret.Shoot(0, 0);
       m_Intake.liftHopper(0, 0);
       m_Intake.intakeHopper(0, 0);
+      m_vision.lightOff();
     }
 
-    if (m_auxController.getAButton()) {
+    /*if (m_auxController.getAButton()) {
       track();
     }
     else {
       m_vision.lightOff();
-    }
+    } */
 
     if (m_auxController.getYButton()) {
       m_climberMotor.set(ControlMode.PercentOutput, 1);
@@ -199,8 +208,10 @@ public class Robot extends TimedRobot {
     else {
       m_climberMotor.set(ControlMode.PercentOutput, 0);
     }
-    System.out.println("Current distance: " + m_DriveTrain.readDistance());
-    // will eventually put into its own subsystem
+
+    // System.out.println("Current distance: " + m_DriveTrain.readDistance());
+
+    System.out.println("The encoder value es: " + m_DriveTrain.encoderValue());
 
 }
 
@@ -232,11 +243,11 @@ public class Robot extends TimedRobot {
           m_Turret.Turn(-lerpResult);
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
-          if (m_Turret.Shoot(1)) {
-            m_Intake.liftHopper(1, .5); 
+          if (m_Turret.Shoot(1, 1)) {
+            m_Intake.liftHopper(1, 1); 
           }
           else {
-            m_Intake.liftHopper(0, 0);
+            m_Intake.liftHopper(1, 0); // might be backwards with the input for hopper first, and lift second
           }
         }
       

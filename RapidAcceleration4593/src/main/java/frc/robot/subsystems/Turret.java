@@ -20,6 +20,9 @@ public class Turret {
     public CANPIDController m_PIDTest;
     public DigitalInput m_limitSwitchLeft;
     public DigitalInput m_limitSwitchRight;
+
+    public Intake m_Intake;
+
     double lastDirection = -.8;
 
     public Turret() {
@@ -39,19 +42,22 @@ public class Turret {
         m_limitSwitchLeft = new DigitalInput(0);
         m_limitSwitchRight = new DigitalInput(1);
 
+        m_Intake = new Intake();
     }
 
     public void Turn(double amount) {
         m_turretMotor.set(ControlMode.PercentOutput, amount);
     }
 
-    public boolean Shoot(double amount) {
+    public boolean Shoot(double shooterAmount, double hopperAmount) { // ended up adding two inputs to the method, in troubleshooting. Not really needed to pass in a hopper speed...
         boolean isToSpeed = false;
-        m_shooterMotors.set(amount);
-        if(m_shooterShaftEncoder.getVelocity() > 3800) {
+        m_shooterMotors.set(shooterAmount);
+        // System.out.println("shoot called");
+        m_Intake.liftHopper(0, hopperAmount);   
+        if(m_shooterShaftEncoder.getVelocity() > 3000) {
             isToSpeed = true;
         }
-        System.out.println("velocity of shooter is:" + m_shooterShaftEncoder.getVelocity());
+        // System.out.println("velocity of shooter is:" + m_shooterShaftEncoder.getVelocity());
         return isToSpeed;
         // memememememememememem
     }

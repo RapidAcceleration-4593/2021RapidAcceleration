@@ -26,7 +26,7 @@ public class Constants {
 
     public class intake {
         public static final int intakeMotorPort = 6;
-        public static final int hopperMotorPort = 4;
+        public static final int hopperMotorPort = 2;
         public static final int intoShooterMotorPort = 3;
     }
 
@@ -41,6 +41,7 @@ public class Constants {
 
     public class autonomous {
         public static final double optimusRange = 10.5;
+        public static final double encoderBackUp = 14;
         
     }
 
