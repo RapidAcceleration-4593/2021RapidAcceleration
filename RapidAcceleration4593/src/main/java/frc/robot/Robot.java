@@ -12,13 +12,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.DigitalInput;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants;
@@ -138,7 +137,7 @@ public class Robot extends TimedRobot {
         }
         else {
           m_Intake.liftHopper(0, 0);
-          m_Turret.Shoot(0, 0);
+          m_Turret.Shoot(0);
           m_DriveTrain.drive(0, 0);
         }
       }
@@ -172,21 +171,21 @@ public class Robot extends TimedRobot {
     // shooting manual
     //b
     if (m_auxController.getStartButton()) {
-      m_Turret.Shoot(1, 0);
+      m_Turret.Shoot(1);
       /// m_Intake.liftHopper(1, .5);
       m_Intake.liftHopper(1, .5);
     } 
     else if (m_auxController.getBButton()) {
-      m_Intake.intakeHopper(.574218575, 1);
+      m_Intake.intakeHopper(.25, 1);
     }
     else if (m_auxController.getXButton()) { // just a smidge
-      m_Intake.intakeHopper(0, -.25);
+      m_Intake.intakeHopper(0, -.5);
     }
     else if (m_auxController.getAButton()) { // must be placed here to keep hopper running, otherwise it sets to 0 when the shoot method is called
       track();
     }
     else {
-      m_Turret.Shoot(0, 0);
+      m_Turret.Shoot(0);
       m_Intake.liftHopper(0, 0);
       m_Intake.intakeHopper(0, 0);
       m_vision.lightOff();
@@ -211,8 +210,8 @@ public class Robot extends TimedRobot {
 
     // System.out.println("Current distance: " + m_DriveTrain.readDistance());
 
-    System.out.println("The encoder value es: " + m_DriveTrain.encoderValue());
-
+    // System.out.println("The encoder value es: " + m_DriveTrain.encoderValue());
+    
 }
 
   /**
@@ -228,13 +227,13 @@ public class Robot extends TimedRobot {
     // need to stabilize the limelight mount! (mechanical problem)
     //if (m_auxController.getAButton()) {
 
-        m_vision.lightOn();
+      m_vision.lightOn();
 
       if (m_vision.isThereTarget() == 1.0 && 
       (m_Turret.leftLimitPressed() == true && m_Turret.rightlimitPressed() == true)) {
 
         double lerpResult = m_Turret.lerp(0, m_vision.getAngleX(), 0.2);
-        System.out.println("lerp result is: " + lerpResult);
+        // System.out.println("lerp result is: " + lerpResult);
         m_Turret.Turn(-lerpResult);
 
         // shoot but stop turret
@@ -243,14 +242,17 @@ public class Robot extends TimedRobot {
           m_Turret.Turn(-lerpResult);
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
-          if (m_Turret.Shoot(1, 1)) {
+          if (m_Turret.Shoot(1)) {
             m_Intake.liftHopper(1, 1); 
+            // m_Intake.hopperBackTime();
+            // m_Intake.m_intoShooterMotor.set(ControlMode.PercentOutput, 1);
           }
           else {
-            m_Intake.liftHopper(1, 0); // might be backwards with the input for hopper first, and lift second
+            m_Intake.liftHopper(0, 1);
+            // m_Intake.hopperBackTime();
+            // m_Intake.m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
           }
         }
-      
       }
       else if (m_Turret.leftLimitPressed() == false) {
         m_Turret.Turn(0);

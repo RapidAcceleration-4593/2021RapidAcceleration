@@ -11,6 +11,7 @@ public class Intake {
     public TalonSRX m_intakeMotor;
     
     public Intake() {
+
         m_intakeMotor = new TalonSRX(Constants.intake.intakeMotorPort);
         m_hopperMotor = new TalonSRX(Constants.intake.hopperMotorPort);
         m_intoShooterMotor = new TalonSRX(Constants.intake.intoShooterMotorPort);
@@ -24,5 +25,18 @@ public class Intake {
     public void liftHopper(double liftAmount, double hopperAmount) {
         m_intoShooterMotor.set(ControlMode.PercentOutput, liftAmount);
         m_hopperMotor.set(ControlMode.PercentOutput, -hopperAmount);
+        
+    }
+
+    public void hopperBackTime() {
+        long x = System.currentTimeMillis() / 1000;
+        if (x % 10 == 0) {
+            liftHopper(-1, 0);
+            System.out.println("Reverse!");
+          }
+          else {
+            liftHopper(1, 0);
+            System.out.println("forward");
+          }
     }
 }
