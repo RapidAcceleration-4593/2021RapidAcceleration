@@ -10,6 +10,8 @@ public class Intake {
     public TalonSRX m_intoShooterMotor;
     public TalonSRX m_intakeMotor;
     
+    public long startTime = System.currentTimeMillis() / 1000;
+
     public Intake() {
 
         m_intakeMotor = new TalonSRX(Constants.intake.intakeMotorPort);
@@ -30,7 +32,7 @@ public class Intake {
 
     public void hopperBackTime() {
         long x = System.currentTimeMillis() / 1000;
-        if (x % 10 == 0) {
+        if ((x - startTime) % 10 == 0) {
             liftHopper(-1, 0);
             System.out.println("Reverse!");
           }

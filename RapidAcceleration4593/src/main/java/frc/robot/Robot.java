@@ -131,7 +131,7 @@ public class Robot extends TimedRobot {
       } else {
         long m_currentSeconds = System.currentTimeMillis() / 1000;
         m_DriveTrain.drive(0, 0);
-        if ((m_currentSeconds - m_autoSecs) < 10) {
+        if ((m_currentSeconds - m_autoSecs) < 15) {
           track();
           m_DriveTrain.drive(0, 0);
         }
@@ -170,13 +170,14 @@ public class Robot extends TimedRobot {
 
     // shooting manual
     //b
+    
     if (m_auxController.getStartButton()) {
       m_Turret.Shoot(1);
       /// m_Intake.liftHopper(1, .5);
       m_Intake.liftHopper(1, .5);
     } 
     else if (m_auxController.getBButton()) {
-      m_Intake.intakeHopper(.25, 1);
+      m_Intake.intakeHopper(.8, 1);
     }
     else if (m_auxController.getXButton()) { // just a smidge
       m_Intake.intakeHopper(0, -.5);
@@ -190,13 +191,14 @@ public class Robot extends TimedRobot {
       m_Intake.intakeHopper(0, 0);
       m_vision.lightOff();
     }
+    
 
-    /*if (m_auxController.getAButton()) {
+    if (m_auxController.getAButton()) {
       track();
     }
     else {
       m_vision.lightOff();
-    } */
+    } 
 
     if (m_auxController.getYButton()) {
       m_climberMotor.set(ControlMode.PercentOutput, 1);
