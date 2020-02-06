@@ -34,6 +34,11 @@ public class Constants {
         public static final int climberMotor1Port = 7;
     }
 
+    public class breakBeam {
+        public static final int intakeBreakBeamPort = 3;
+        public static final int shooterBreakBeamPort = 2; 
+    }
+
     public class controllers {
         public static final int mainControllerPort = 0;
         public static final int auxControllerPort = 1;

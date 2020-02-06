@@ -23,6 +23,7 @@ import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.BreakBeam;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -48,8 +49,8 @@ public class Robot extends TimedRobot {
   public CANEncoder m_driveEncoder;
   public XboxController m_mainController;
   public XboxController m_auxController; 
+  public BreakBeam m_breakBeamZ;
 
-  public DigitalInput m_breakBeam;
   // public DigitalInput m_limitSwitchLeft;
   // public DigitalInput m_limitSwitchRight;
 
@@ -67,13 +68,14 @@ public class Robot extends TimedRobot {
     m_DriveTrain = new DriveTrain();
     m_Turret = new Turret();
     m_Intake = new Intake();
+    m_breakBeamZ = new BreakBeam();
 
     m_climberMotor = new TalonSRX(Constants.climber.climberMotor1Port);
 
     m_mainController = new XboxController(Constants.controllers.mainControllerPort);
     m_auxController = new XboxController(Constants.controllers.auxControllerPort);
 
-    m_breakBeam = new DigitalInput(2);
+    
     // m_limitSwitchLeft = new DigitalInput(0);
     // m_limitSwitchRight = new DigitalInput(1);
   }
@@ -152,7 +154,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    // System.out.println("Break beam:" + m_breakBeam.get());
+    m_breakBeamZ.CheckIntake();
+    m_breakBeamZ.CheckShooter();
 
     // different methods of driving
     m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
