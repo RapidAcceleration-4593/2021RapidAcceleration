@@ -11,8 +11,8 @@ public class Constants {
     }
 
     public class shooter {
-        public static final int shooterLeftPort = 12;
-        public static final int shooterRightPort = 13;
+        public static final int shooterLeftPort = 13;
+        public static final int shooterRightPort = 12;
 
         public static final int turretPort = 1;
 

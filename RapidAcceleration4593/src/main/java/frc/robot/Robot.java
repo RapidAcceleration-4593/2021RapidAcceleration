@@ -177,7 +177,7 @@ public class Robot extends TimedRobot {
     if (m_auxController.getStartButton()) {
       m_Turret.Shoot(1);
       /// m_Intake.liftHopper(1, .5);
-      m_Intake.liftHopper(1, .5);
+      // m_Intake.liftHopper(1, .5);
     } 
     else if (m_auxController.getBButton()) {
       m_Intake.intakeHopper(.8, 1);

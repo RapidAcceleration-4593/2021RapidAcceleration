@@ -34,7 +34,7 @@ public class Turret {
         m_shooterMotorRight.setSecondaryCurrentLimit(40);
         m_shooterShaftEncoder = new CANEncoder(m_shooterMotorRight);
         m_shooterMotors = new SpeedControllerGroup(m_shooterMotorLeft, m_shooterMotorRight);
-        m_climberMotor = new TalonSRX(Constants.climber.climberMotor1Port);
+        m_shooterMotors.setInverted(true);
         m_turretMotor = new TalonSRX(Constants.shooter.turretPort);
         m_PIDTest = new CANPIDController(m_shooterMotorLeft);
         m_PIDTest.setFF(Constants.shooter.shooterFF);
@@ -51,7 +51,9 @@ public class Turret {
 
     public boolean Shoot(double shooterAmount) { // ended up adding two inputs to the method, in troubleshooting. Not really needed to pass in a hopper speed...
         boolean isToSpeed = false;
-        m_shooterMotors.set(shooterAmount);
+        // m_shooterMotors.set(shooterAmount);
+        m_shooterMotorLeft.set(-shooterAmount);
+        m_shooterMotorRight.set(shooterAmount);
         // System.out.println("shoot called");   
         if(m_shooterShaftEncoder.getVelocity() > 3800) {
             isToSpeed = true;
