@@ -2,19 +2,19 @@ package frc.robot;
 
 public class Constants {
     public class driveTrain {
-        public static final int FRMPort = 11;
-        public static final int RRMPort = 10;
-        public static final int FLMPort = 9;
-        public static final int RLMPort = 8;
+        public static final int FRMPort = 8;
+        public static final int RRMPort = 9;
+        public static final int FLMPort = 6;
+        public static final int RLMPort = 7;
 
         public static final int ultrasonicPort = 1;
     }
 
     public class shooter {
-        public static final int shooterLeftPort = 13;
-        public static final int shooterRightPort = 12;
+        public static final int shooterLeftPort = 10;
+        public static final int shooterRightPort = 11;
 
-        public static final int turretPort = 1;
+        public static final int turretPort = 4;
 
         public static final double shooterFF = .00001;
 
@@ -25,13 +25,13 @@ public class Constants {
     }
 
     public class intake {
-        public static final int intakeMotorPort = 6;
-        public static final int hopperMotorPort = 2;
+        public static final int intakeMotorPort = 5;
+        public static final int hopperMotorPort = 1;
         public static final int intoShooterMotorPort = 3;
     }
 
     public class climber {
-        public static final int climberMotor1Port = 7;
+        public static final int climberMotor1Port = 2;
     }
 
     public class breakBeam {

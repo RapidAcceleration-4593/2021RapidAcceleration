@@ -36,12 +36,17 @@ public class DriveTrain{
         FLM = new CANSparkMax(Constants.driveTrain.FLMPort, MotorType.kBrushless);
         m_leftDrive = new SpeedControllerGroup(FLM, RLM);
         m_rightSideEncoder = new CANEncoder(FRM);
-        m_rightSidePID = new CANPIDController(FRM);
-        m_leftSidePID = new CANPIDController(FLM);
+        // m_rightSidePID = new CANPIDController(FRM);
+        // m_leftSidePID = new CANPIDController(FLM);
         m_leftSideEncoder = new CANEncoder(FLM);
         m_driveTrain = new DifferentialDrive(m_leftDrive, m_rightDrive);
         m_driveTrain.setRightSideInverted(true);
         m_driveTrain.setDeadband(.03);
+
+        // we might be initializing pid stuff wrong!
+        // below is new way to do PID which i think is actually right
+        m_rightSidePID = FRM.getPIDController();
+        m_leftSidePID = FLM.getPIDController();
         
         m_leftSidePID.setOutputRange(-1, 1);
         m_leftSidePID.setFF(.00015);
@@ -51,12 +56,9 @@ public class DriveTrain{
     
         m_rightSidePID.setOutputRange(-1, 1);
         m_rightSidePID.setFF(.00015);
-        m_rightSidePID.setP(.00035);
+        m_rightSidePID.setP(.5);
         m_rightSidePID.setI(0);
         m_rightSidePID.setD(0);
-
-        // FRM.burnFlash();
-        // FLM.burnFlash();
 
         m_leftSideEncoder.setPosition(0);
         m_ultrasonic = new AnalogInput(Constants.driveTrain.ultrasonicPort);
