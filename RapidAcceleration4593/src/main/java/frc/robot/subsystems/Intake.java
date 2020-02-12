@@ -21,12 +21,12 @@ public class Intake {
 
     public void intakeHopper(double intakeAmount, double hopperAmount) {
         m_intakeMotor.set(ControlMode.PercentOutput, -intakeAmount);
-        m_hopperMotor.set(ControlMode.PercentOutput, -hopperAmount);
+        m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
     }
 
     public void liftHopper(double liftAmount, double hopperAmount) {
         m_intoShooterMotor.set(ControlMode.PercentOutput, liftAmount);
-        m_hopperMotor.set(ControlMode.PercentOutput, -hopperAmount);
+        m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
         
     }
 

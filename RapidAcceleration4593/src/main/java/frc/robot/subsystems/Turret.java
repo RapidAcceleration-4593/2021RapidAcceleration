@@ -39,8 +39,8 @@ public class Turret {
         m_PIDTest = new CANPIDController(m_shooterMotorLeft);
         m_PIDTest.setFF(Constants.shooter.shooterFF);
         m_PIDTest.setP(.00001);
-        m_limitSwitchLeft = new DigitalInput(0);
-        m_limitSwitchRight = new DigitalInput(1);
+        m_limitSwitchLeft = new DigitalInput(Constants.shooter.leftLimitSwitchPort);
+        m_limitSwitchRight = new DigitalInput(Constants.shooter.rightLimitSwitchPort);
 
         m_Intake = new Intake();
     }
@@ -55,7 +55,7 @@ public class Turret {
         m_shooterMotorLeft.set(-shooterAmount);
         m_shooterMotorRight.set(shooterAmount);
         // System.out.println("shoot called");   
-        if(m_shooterShaftEncoder.getVelocity() > 3800) {
+        if(m_shooterShaftEncoder.getVelocity() > 3000) {
             isToSpeed = true;
         }
         // System.out.println("velocity of shooter is:" + m_shooterShaftEncoder.getVelocity());
@@ -86,11 +86,11 @@ public class Turret {
 
         System.out.println("I am flashBANGED");
         if (m_limitSwitchRight.get() == false) {
-            lastDirection = .8;
+            lastDirection = -.8;
             Turn(lastDirection);
         } 
         else if (m_limitSwitchLeft.get() == false) {
-            lastDirection = -.8;
+            lastDirection = .8;
             Turn(lastDirection);
         } 
         else {
@@ -107,7 +107,7 @@ public class Turret {
         }
     }
 
-    public boolean rightlimitPressed() {
+    public boolean rightLimitPressed() {
         if (m_limitSwitchRight.get() == false) {
             return false;
         }

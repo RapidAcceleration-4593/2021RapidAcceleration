@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.HIDType;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.DigitalInput;
 
@@ -133,7 +134,7 @@ public class Robot extends TimedRobot {
       } else {
         long m_currentSeconds = System.currentTimeMillis() / 1000;
         m_DriveTrain.drive(0, 0);
-        if ((m_currentSeconds - m_autoSecs) < 15) {
+        if ((m_currentSeconds - m_autoSecs) < 10) {
           track();
           m_DriveTrain.drive(0, 0);
         }
@@ -163,9 +164,9 @@ public class Robot extends TimedRobot {
     // System.out.println(m_DriveTrain.encoderValue());
 
     //bumpers
-    if (m_mainController.getBumper(Hand.kRight)) {
+    if (m_mainController.getBumper(Hand.kRight) && m_Turret.leftLimitPressed() == true) {
       m_Turret.Turn(-1);
-    } else if (m_mainController.getBumper(Hand.kLeft)) {
+    } else if (m_mainController.getBumper(Hand.kLeft) && m_Turret.rightLimitPressed() == true) {
       m_Turret.Turn(1);
     } else {
       m_Turret.Turn(0);
@@ -179,14 +180,29 @@ public class Robot extends TimedRobot {
       /// m_Intake.liftHopper(1, .5);
       // m_Intake.liftHopper(1, .5);
     } 
-    else if (m_auxController.getBButton()) {
-      m_Intake.intakeHopper(.8, 1);
+    else if (m_auxController.getAButton()) {
+      m_Intake.intakeHopper(.5, 0);
     }
-    else if (m_auxController.getXButton()) { // just a smidge
+    else if (m_auxController.getBButton()) { // just a smidge
       m_Intake.intakeHopper(0, -.5);
     }
-    else if (m_auxController.getAButton()) { // must be placed here to keep hopper running, otherwise it sets to 0 when the shoot method is called
+    else if (m_auxController.getYButton()) { // must be placed here to keep hopper running, otherwise it sets to 0 when the shoot method is called
       track();
+    }
+    else if (m_mainController.getAButton()) {
+      m_Intake.intakeHopper(0, 1);
+    }
+    else if (m_mainController.getBButton()) {
+      m_Intake.liftHopper(.5, 0);
+    }
+    else if (m_mainController.getXButton()) {
+      m_Intake.liftHopper(-.5, 0);
+    }
+    else if (m_mainController.getYButton()) {
+      m_Intake.intakeHopper(0, 1);
+    }
+    else if (m_auxController.getBackButton()) {
+      m_Turret.Shoot(-.5);
     }
     else {
       m_Turret.Shoot(0);
@@ -194,19 +210,12 @@ public class Robot extends TimedRobot {
       m_Intake.intakeHopper(0, 0);
       m_vision.lightOff();
     }
-    
 
-    if (m_auxController.getAButton()) {
-      track();
-    }
-    else {
-      m_vision.lightOff();
-    } 
 
-    if (m_auxController.getYButton()) {
+    if (m_auxController.getBumper(Hand.kLeft)) {
       m_climberMotor.set(ControlMode.PercentOutput, 1);
     }
-    else if (m_auxController.getBackButton()) {
+    else if (m_auxController.getBumper(Hand.kRight)) {
       m_climberMotor.set(ControlMode.PercentOutput, -1);
     }
     else {
@@ -235,7 +244,7 @@ public class Robot extends TimedRobot {
       m_vision.lightOn();
 
       if (m_vision.isThereTarget() == 1.0 && 
-      (m_Turret.leftLimitPressed() == true && m_Turret.rightlimitPressed() == true)) {
+      (m_Turret.leftLimitPressed() == true && m_Turret.rightLimitPressed() == true)) {
 
         double lerpResult = m_Turret.lerp(0, m_vision.getAngleX(), 0.2);
         // System.out.println("lerp result is: " + lerpResult);
@@ -248,24 +257,26 @@ public class Robot extends TimedRobot {
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
           if (m_Turret.Shoot(1)) {
-            m_Intake.liftHopper(1, 1); 
+            m_Intake.liftHopper(.75, 1); 
             // m_Intake.hopperBackTime();
             // m_Intake.m_intoShooterMotor.set(ControlMode.PercentOutput, 1);
           }
           else {
-            m_Intake.liftHopper(0, 1);
+            m_Intake.liftHopper(0, 0);
             // m_Intake.hopperBackTime();
             // m_Intake.m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
           }
         }
       }
       else if (m_Turret.leftLimitPressed() == false) {
-        m_Turret.Turn(0);
+        // m_Turret.Turn(0);
         System.out.println("Left limit reached");
+        m_Turret.seek();
       }
-      else if (m_Turret.rightlimitPressed() == false) {
-        m_Turret.Turn(0);
+      else if (m_Turret.rightLimitPressed() == false) {
+        // m_Turret.Turn(0);
         System.out.println("Right limit reached");
+        m_Turret.seek();
       }
       else {
         m_Turret.seek();
