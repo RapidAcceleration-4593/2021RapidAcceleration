@@ -7,6 +7,7 @@ import com.revrobotics.CANEncoder;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import edu.wpi.first.wpilibj.AnalogInput;
 
 public class DriveTrain{
@@ -41,7 +42,7 @@ public class DriveTrain{
         m_leftSideEncoder = new CANEncoder(FLM);
         m_driveTrain = new DifferentialDrive(m_leftDrive, m_rightDrive);
         m_driveTrain.setRightSideInverted(true);
-        m_driveTrain.setDeadband(.03);
+        m_driveTrain.setDeadband(.1);
 
         // we might be initializing pid stuff wrong!
         // below is new way to do PID which i think is actually right
@@ -74,9 +75,14 @@ public class DriveTrain{
     }
     
     public double encoderValue() {
+        rotations = Math.abs((m_leftSideEncoder.getPosition()) + Math.abs((m_rightSideEncoder.getPosition()))) / 2;
         System.out.println("Encoder position is: " + m_leftSideEncoder.getPosition());
-        rotations = m_leftSideEncoder.getPosition();
         return rotations;
+    }
+
+    public void zeroEncoder() {
+        m_leftSideEncoder.setPosition(0);
+        m_rightSideEncoder.setPosition(0);
     }
 
     public double readDistance() {

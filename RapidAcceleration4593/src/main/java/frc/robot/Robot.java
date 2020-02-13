@@ -113,6 +113,7 @@ public class Robot extends TimedRobot {
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     m_autoSecs = System.currentTimeMillis() / 1000;
+    m_DriveTrain.zeroEncoder();
   }
 
   /**
@@ -159,8 +160,8 @@ public class Robot extends TimedRobot {
     m_breakBeamZ.CheckShooter();
 
     // different methods of driving
-    m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
-    // m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(0));
+    // m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
+    m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(0));
     // System.out.println(m_DriveTrain.encoderValue());
 
     //bumpers

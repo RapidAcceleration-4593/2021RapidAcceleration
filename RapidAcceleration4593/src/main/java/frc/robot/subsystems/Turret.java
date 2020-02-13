@@ -23,7 +23,7 @@ public class Turret {
 
     public Intake m_Intake;
 
-    double lastDirection = -.8;
+    double lastDirection = .8; // may need to switch sign based on starting position
 
     public Turret() {
         m_shooterMotorLeft = new CANSparkMax(Constants.shooter.shooterLeftPort, MotorType.kBrushless);
@@ -55,7 +55,7 @@ public class Turret {
         m_shooterMotorLeft.set(-shooterAmount);
         m_shooterMotorRight.set(shooterAmount);
         // System.out.println("shoot called");   
-        if(m_shooterShaftEncoder.getVelocity() > 3000) {
+        if(m_shooterShaftEncoder.getVelocity() > 5000) {
             isToSpeed = true;
         }
         // System.out.println("velocity of shooter is:" + m_shooterShaftEncoder.getVelocity());
