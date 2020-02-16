@@ -85,11 +85,11 @@ public class Turret {
     public void seek() {
 
         System.out.println("I am flashBANGED");
-        if (m_limitSwitchRight.get() == false) {
+        if (m_limitSwitchLeft.get() == false) {
             lastDirection = -.8;
             Turn(lastDirection);
         } 
-        else if (m_limitSwitchLeft.get() == false) {
+        else if (m_limitSwitchRight.get() == false) {
             lastDirection = .8;
             Turn(lastDirection);
         } 

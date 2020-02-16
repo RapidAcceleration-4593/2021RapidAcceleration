@@ -51,9 +51,9 @@ public class Robot extends TimedRobot {
   public XboxController m_mainController;
   public XboxController m_auxController; 
   public BreakBeam m_breakBeamZ;
-
-  // public DigitalInput m_limitSwitchLeft;
-  // public DigitalInput m_limitSwitchRight;
+  public TalonSRX m_wheelOfFortune;
+  public DigitalInput m_limitSwitchLeft;
+  public DigitalInput m_limitSwitchRight;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -70,6 +70,7 @@ public class Robot extends TimedRobot {
     m_Turret = new Turret();
     m_Intake = new Intake();
     m_breakBeamZ = new BreakBeam();
+    m_wheelOfFortune = new TalonSRX(Constants.wheelOfFortune.wheelOfFortunePort);
 
     m_climberMotor = new TalonSRX(Constants.climber.climberMotor1Port);
 
@@ -118,6 +119,10 @@ public class Robot extends TimedRobot {
 
   /**
    * This function is called periodically during autonomous.
+   * Add states for:
+   * 1) Initial back and shoot (initial)
+   * 2) pick up ammo (after break beam reads 0 or after x time: change state)
+   * 3) shoot again (after ammo pick up and break beam > 0 or after x time)
    */
   @Override
   public void autonomousPeriodic() {
@@ -160,14 +165,14 @@ public class Robot extends TimedRobot {
     m_breakBeamZ.CheckShooter();
 
     // different methods of driving
-    // m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
-    m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(0));
+    m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
+    //m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(0));
     // System.out.println(m_DriveTrain.encoderValue());
 
     //bumpers
-    if (m_mainController.getBumper(Hand.kRight) && m_Turret.leftLimitPressed() == true) {
+    if (m_mainController.getBumper(Hand.kRight) && m_Turret.rightLimitPressed() == true) {
       m_Turret.Turn(-1);
-    } else if (m_mainController.getBumper(Hand.kLeft) && m_Turret.rightLimitPressed() == true) {
+    } else if (m_mainController.getBumper(Hand.kLeft) && m_Turret.leftLimitPressed() == true) {
       m_Turret.Turn(1);
     } else {
       m_Turret.Turn(0);
@@ -182,34 +187,32 @@ public class Robot extends TimedRobot {
       // m_Intake.liftHopper(1, .5);
     } 
     else if (m_auxController.getAButton()) {
-      m_Intake.intakeHopper(.5, 0);
+      m_Intake.intakeHopper(.69, .5);
     }
     else if (m_auxController.getBButton()) { // just a smidge
-      m_Intake.intakeHopper(0, -.5);
+      m_Intake.intakeHopper(-1, -.5);
     }
     else if (m_auxController.getYButton()) { // must be placed here to keep hopper running, otherwise it sets to 0 when the shoot method is called
       track();
     }
-    else if (m_mainController.getAButton()) {
-      m_Intake.intakeHopper(0, 1);
+    else if (m_auxController.getBackButton()) {
+      m_Turret.Shoot(-.5);
     }
-    else if (m_mainController.getBButton()) {
+    else if (m_mainController.getAButton()){
       m_Intake.liftHopper(.5, 0);
     }
     else if (m_mainController.getXButton()) {
       m_Intake.liftHopper(-.5, 0);
     }
-    else if (m_mainController.getYButton()) {
-      m_Intake.intakeHopper(0, 1);
-    }
-    else if (m_auxController.getBackButton()) {
-      m_Turret.Shoot(-.5);
+    else if (m_auxController.getXButton()){
+      m_wheelOfFortune.set(ControlMode.PercentOutput, 1);
     }
     else {
       m_Turret.Shoot(0);
       m_Intake.liftHopper(0, 0);
       m_Intake.intakeHopper(0, 0);
       m_vision.lightOff();
+      m_wheelOfFortune.set(ControlMode.PercentOutput, 0);
     }
 
 
