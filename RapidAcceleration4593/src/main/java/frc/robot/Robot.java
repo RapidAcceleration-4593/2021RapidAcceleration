@@ -11,20 +11,19 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.HIDType;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.DigitalInput;
-
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.WheelOfFortune;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants;
 import frc.robot.subsystems.Turret;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.BreakBeam;
+import frc.robot.subsystems.Climber;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -46,12 +45,13 @@ public class Robot extends TimedRobot {
   public DriveTrain m_DriveTrain;
   public Turret m_Turret;
   public Intake m_Intake;
-  public TalonSRX m_climberMotor;
+  public WheelOfFortune m_WoF; 
+  public Climber m_Climber;
   public CANEncoder m_driveEncoder;
   public XboxController m_mainController;
   public XboxController m_auxController; 
   public BreakBeam m_breakBeamZ;
-  public TalonSRX m_wheelOfFortune;
+  
   public DigitalInput m_limitSwitchLeft;
   public DigitalInput m_limitSwitchRight;
 
@@ -69,10 +69,9 @@ public class Robot extends TimedRobot {
     m_DriveTrain = new DriveTrain();
     m_Turret = new Turret();
     m_Intake = new Intake();
+    m_WoF = new WheelOfFortune();
+    m_Climber = new Climber();
     m_breakBeamZ = new BreakBeam();
-    m_wheelOfFortune = new TalonSRX(Constants.wheelOfFortune.wheelOfFortunePort);
-
-    m_climberMotor = new TalonSRX(Constants.climber.climberMotor1Port);
 
     m_mainController = new XboxController(Constants.controllers.mainControllerPort);
     m_auxController = new XboxController(Constants.controllers.auxControllerPort);
@@ -115,6 +114,7 @@ public class Robot extends TimedRobot {
     System.out.println("Auto selected: " + m_autoSelected);
     m_autoSecs = System.currentTimeMillis() / 1000;
     m_DriveTrain.zeroEncoder();
+    m_DriveTrain.brakeMode();
   }
 
   /**
@@ -134,20 +134,25 @@ public class Robot extends TimedRobot {
     default:
       // Put default auto code here
       // first we need optimal sensor
+      m_breakBeamZ.CheckIntake();
+      m_breakBeamZ.CheckShooter();
+      System.out.println(m_breakBeamZ.CheckShooter());
       if (m_DriveTrain.encoderValue() < Constants.autonomous.encoderBackUp) {
         m_DriveTrain.drive(-.5, -.5);
         System.out.println(m_DriveTrain.encoderValue());
       } else {
         long m_currentSeconds = System.currentTimeMillis() / 1000;
         m_DriveTrain.drive(0, 0);
-        if ((m_currentSeconds - m_autoSecs) < 10) {
+        if (m_breakBeamZ.CheckShooter() != 0) {
           track();
           m_DriveTrain.drive(0, 0);
         }
         else {
           m_Intake.liftHopper(0, 0);
           m_Turret.Shoot(0);
+          m_Turret.Turn(0);
           m_DriveTrain.drive(0, 0);
+          m_vision.lightOff();
         }
       }
       break;
@@ -158,6 +163,12 @@ public class Robot extends TimedRobot {
   /**
    * This function is called periodically during operator control.
    */
+
+  @Override
+  public void teleopInit() {
+    m_DriveTrain.coastMode();
+  }
+
   @Override
   public void teleopPeriodic() {
 
@@ -165,8 +176,8 @@ public class Robot extends TimedRobot {
     m_breakBeamZ.CheckShooter();
 
     // different methods of driving
-    m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
-    //m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(0));
+    // m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
+    m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), .75 * m_mainController.getRawAxis(4));
     // System.out.println(m_DriveTrain.encoderValue());
 
     //bumpers
@@ -204,26 +215,36 @@ public class Robot extends TimedRobot {
     else if (m_mainController.getXButton()) {
       m_Intake.liftHopper(-.5, 0);
     }
-    else if (m_auxController.getXButton()){
-      m_wheelOfFortune.set(ControlMode.PercentOutput, 1);
-    }
     else {
       m_Turret.Shoot(0);
       m_Intake.liftHopper(0, 0);
       m_Intake.intakeHopper(0, 0);
       m_vision.lightOff();
-      m_wheelOfFortune.set(ControlMode.PercentOutput, 0);
     }
 
 
     if (m_auxController.getBumper(Hand.kLeft)) {
-      m_climberMotor.set(ControlMode.PercentOutput, 1);
+      m_Climber.deployClimber(-.35);
     }
     else if (m_auxController.getBumper(Hand.kRight)) {
-      m_climberMotor.set(ControlMode.PercentOutput, -1);
+      m_Climber.climb(1);
+    }
+    else if (m_mainController.getStartButton()) {
+      m_Climber.climb(-1);
     }
     else {
-      m_climberMotor.set(ControlMode.PercentOutput, 0);
+      m_Climber.climb(0);
+      m_Climber.deployClimber(0);
+    }
+
+    if (m_auxController.getTriggerAxis(Hand.kRight) >= .1) {
+      m_WoF.spinDatWheel(.118 * m_auxController.getTriggerAxis(Hand.kRight));
+    }
+    else if (m_auxController.getTriggerAxis(Hand.kLeft) >= .1) {
+      m_WoF.spinDatWheel(-.118 * m_auxController.getTriggerAxis(Hand.kLeft));
+    }
+    else {
+      m_WoF.spinDatWheel(0);
     }
 
     // System.out.println("Current distance: " + m_DriveTrain.readDistance());
@@ -261,7 +282,7 @@ public class Robot extends TimedRobot {
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
           if (m_Turret.Shoot(1)) {
-            m_Intake.liftHopper(.75, 1); 
+            m_Intake.liftHopper(.5, 1); 
             // m_Intake.hopperBackTime();
             // m_Intake.m_intoShooterMotor.set(ControlMode.PercentOutput, 1);
           }

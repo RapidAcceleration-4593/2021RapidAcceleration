@@ -35,11 +35,12 @@ public class Constants {
 
     public class climber {
         public static final int climberMotor1Port = 4;
+        public static final int deployClimberPort = 5;
     }
 
     public class breakBeam {
-        public static final int intakeBreakBeamPort = 3;
-        public static final int shooterBreakBeamPort = 2; 
+        public static final int intakeBreakBeamPort = 2;
+        public static final int shooterBreakBeamPort = 4; 
     }
 
     public class controllers {
@@ -54,8 +55,7 @@ public class Constants {
     }
 
     public class wheelOfFortune{
-       public static final int wheelOfFortune = 1;
-        public static final int wheelOfFortunePort = 3; 
+       public static final int wheelOfFortunePort = 3; 
     }
 
 }

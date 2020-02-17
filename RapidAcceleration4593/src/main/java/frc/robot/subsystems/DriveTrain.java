@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.revrobotics.CANPIDController;
 import com.revrobotics.CANEncoder;
@@ -92,5 +94,19 @@ public class DriveTrain{
         double convertedValue = distance / (305);
 
         return convertedValue;
+    }
+
+    public void brakeMode() {
+        FLM.setIdleMode(IdleMode.kBrake);
+        FRM.setIdleMode(IdleMode.kBrake);
+        RRM.setIdleMode(IdleMode.kBrake);
+        RLM.setIdleMode(IdleMode.kBrake);
+    }
+
+    public void coastMode() {
+        FLM.setIdleMode(IdleMode.kCoast);
+        FRM.setIdleMode(IdleMode.kCoast);
+        RRM.setIdleMode(IdleMode.kCoast);
+        RLM.setIdleMode(IdleMode.kCoast);
     }
 }

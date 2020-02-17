@@ -24,7 +24,7 @@ public class BreakBeam {
         m_shooterState = BreakBeamState.NotChanging;
 
     }
-    public void CheckIntake() {
+    public int CheckIntake() {
         if (m_intakeBreakBeam.get() == false && m_intakeState == BreakBeamState.NotChanging) {
                 m_intakeState = BreakBeamState.Changing;
         }
@@ -33,8 +33,9 @@ public class BreakBeam {
             m_intakeState = BreakBeamState.NotChanging;
         }
         System.out.println("# of Ballz: " + m_numBall);
+        return m_numBall;
     }   
-    public void CheckShooter() {
+    public int CheckShooter() {
         if (m_shooterBreakBeam.get() == false && m_shooterState == BreakBeamState.NotChanging) {
                 m_shooterState = BreakBeamState.Changing;
         }
@@ -47,5 +48,10 @@ public class BreakBeam {
             m_shooterState = BreakBeamState.NotChanging;
         }
         System.out.println("# of Ballz: " + m_numBall);
-    } 
+        return m_numBall;
+    }
+    
+    public int ballCount() {
+        return m_numBall;
+    }
 }

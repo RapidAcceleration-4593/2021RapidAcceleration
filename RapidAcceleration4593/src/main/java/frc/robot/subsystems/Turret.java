@@ -51,11 +51,10 @@ public class Turret {
 
     public boolean Shoot(double shooterAmount) { // ended up adding two inputs to the method, in troubleshooting. Not really needed to pass in a hopper speed...
         boolean isToSpeed = false;
-        // m_shooterMotors.set(shooterAmount);
         m_shooterMotorLeft.set(-shooterAmount);
-        m_shooterMotorRight.set(shooterAmount);
-        // System.out.println("shoot called");   
-        if(m_shooterShaftEncoder.getVelocity() > 5000) {
+        m_shooterMotorRight.set(shooterAmount); 
+        System.out.println(m_shooterShaftEncoder.getVelocity());
+        if (m_shooterShaftEncoder.getVelocity() > 4500) {
             isToSpeed = true;
         }
         // System.out.println("velocity of shooter is:" + m_shooterShaftEncoder.getVelocity());
