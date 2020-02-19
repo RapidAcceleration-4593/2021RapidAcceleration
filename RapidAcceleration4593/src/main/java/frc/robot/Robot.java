@@ -13,11 +13,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.DigitalInput;
-import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.revrobotics.CANEncoder;
 
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WheelOfFortune;
+import frc.robot.subsystems.BreakBeam.BreakBeamState;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants;
 import frc.robot.subsystems.Turret;
@@ -32,6 +32,7 @@ import frc.robot.subsystems.Climber;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
+
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "My Auto";
@@ -107,6 +108,7 @@ public class Robot extends TimedRobot {
    * switch structure below with additional strings. If using the SendableChooser
    * make sure to add them to the chooser code above as well.
    */
+
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
@@ -124,6 +126,7 @@ public class Robot extends TimedRobot {
    * 2) pick up ammo (after break beam reads 0 or after x time: change state)
    * 3) shoot again (after ammo pick up and break beam > 0 or after x time)
    */
+
   @Override
   public void autonomousPeriodic() {
     switch (m_autoSelected) {
@@ -148,7 +151,7 @@ public class Robot extends TimedRobot {
           m_DriveTrain.drive(0, 0);
         }
         else {
-          m_Intake.liftHopper(0, 0);
+          m_Intake.liftHopper(0, 0, true);
           m_Turret.Shoot(0);
           m_Turret.Turn(0);
           m_DriveTrain.drive(0, 0);
@@ -192,7 +195,7 @@ public class Robot extends TimedRobot {
     // shooting manual
     //b
     
-    if (m_auxController.getStartButton()) {
+    if (m_auxController.getBackButton()) {
       m_Turret.Shoot(1);
       /// m_Intake.liftHopper(1, .5);
       // m_Intake.liftHopper(1, .5);
@@ -206,18 +209,15 @@ public class Robot extends TimedRobot {
     else if (m_auxController.getYButton()) { // must be placed here to keep hopper running, otherwise it sets to 0 when the shoot method is called
       track();
     }
-    else if (m_auxController.getBackButton()) {
-      m_Turret.Shoot(-.5);
-    }
     else if (m_mainController.getAButton()){
-      m_Intake.liftHopper(.5, 0);
+      m_Intake.liftHopper(.5, 0, true);
     }
     else if (m_mainController.getXButton()) {
-      m_Intake.liftHopper(-.5, 0);
+      m_Intake.liftHopper(-.5, 0, true);
     }
     else {
       m_Turret.Shoot(0);
-      m_Intake.liftHopper(0, 0);
+      m_Intake.liftHopper(0, 0, true);
       m_Intake.intakeHopper(0, 0);
       m_vision.lightOff();
     }
@@ -229,7 +229,7 @@ public class Robot extends TimedRobot {
     else if (m_auxController.getBumper(Hand.kRight)) {
       m_Climber.climb(1);
     }
-    else if (m_mainController.getStartButton()) {
+    else if (m_auxController.getStartButton()) {
       m_Climber.climb(-1);
     }
     else {
@@ -281,13 +281,13 @@ public class Robot extends TimedRobot {
           m_Turret.Turn(-lerpResult);
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
-          if (m_Turret.Shoot(1)) {
-            m_Intake.liftHopper(.5, 1); 
+          if (m_Turret.Shoot(1) && m_breakBeamZ.m_shooterState == BreakBeam.BreakBeamState.NotChanging) {
+            m_Intake.liftHopper(.5, 1, false); 
             // m_Intake.hopperBackTime();
             // m_Intake.m_intoShooterMotor.set(ControlMode.PercentOutput, 1);
           }
           else {
-            m_Intake.liftHopper(0, 0);
+            m_Intake.liftHopper(0, 0, false);
             // m_Intake.hopperBackTime();
             // m_Intake.m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
           }

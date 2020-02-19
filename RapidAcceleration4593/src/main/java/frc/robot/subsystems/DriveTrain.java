@@ -38,6 +38,12 @@ public class DriveTrain{
         RLM = new CANSparkMax(Constants.driveTrain.RLMPort, MotorType.kBrushless);
         FLM = new CANSparkMax(Constants.driveTrain.FLMPort, MotorType.kBrushless);
         m_leftDrive = new SpeedControllerGroup(FLM, RLM);
+
+        // FRM.restoreFactoryDefaults();
+        // RRM.restoreFactoryDefaults();
+        // RLM.restoreFactoryDefaults();
+        // FLM.restoreFactoryDefaults();
+
         m_rightSideEncoder = new CANEncoder(FRM);
         // m_rightSidePID = new CANPIDController(FRM);
         // m_leftSidePID = new CANPIDController(FLM);
@@ -53,22 +59,26 @@ public class DriveTrain{
         
         m_leftSidePID.setOutputRange(-1, 1);
         m_leftSidePID.setFF(.00015);
-        m_leftSidePID.setP(.00035);
+        m_leftSidePID.setP(.0001);
         m_leftSidePID.setI(0);
         m_leftSidePID.setD(0);
     
         m_rightSidePID.setOutputRange(-1, 1);
         m_rightSidePID.setFF(.00015);
-        m_rightSidePID.setP(.5);
+        m_rightSidePID.setP(.00035);
         m_rightSidePID.setI(0);
         m_rightSidePID.setD(0);
 
         m_leftSideEncoder.setPosition(0);
         m_ultrasonic = new AnalogInput(Constants.driveTrain.ultrasonicPort);
+
+
     }
 
     public void drive(double a1, double a2){
         // comment one of these drivetrains out or bad things will happen
+        // m_leftSidePID.setReference(a1, ControlType.kVelocity);
+        // m_rightSidePID.setReference(a2, ControlType.kVelocity);
         m_driveTrain.tankDrive(-a1, -a2);
     }
 
