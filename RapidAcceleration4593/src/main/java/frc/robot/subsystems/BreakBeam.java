@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DigitalInput;
 import frc.robot.Constants;
 
-
-
 public class BreakBeam {
 
     public enum BreakBeamState {

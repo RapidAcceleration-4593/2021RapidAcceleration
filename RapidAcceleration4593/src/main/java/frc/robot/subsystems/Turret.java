@@ -5,7 +5,6 @@ import com.revrobotics.CANPIDController;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import frc.robot.Constants;
@@ -14,14 +13,13 @@ public class Turret {
     public CANSparkMax m_shooterMotorLeft;
     public CANEncoder m_shooterShaftEncoder;
     public CANSparkMax m_shooterMotorRight;
-    public SpeedControllerGroup m_shooterMotors;
+    public CANEncoder m_encoderLeft;
+    // public SpeedControllerGroup m_shooterMotors;
     public TalonSRX m_turretMotor;
     public TalonSRX m_climberMotor;
     public CANPIDController m_PIDTest;
     public DigitalInput m_limitSwitchLeft;
     public DigitalInput m_limitSwitchRight;
-
-    public Intake m_Intake;
 
     double lastDirection = .8; // may need to switch sign based on starting position
 
@@ -33,8 +31,9 @@ public class Turret {
         m_shooterMotorRight.setSmartCurrentLimit(39);
         m_shooterMotorRight.setSecondaryCurrentLimit(40);
         m_shooterShaftEncoder = new CANEncoder(m_shooterMotorRight);
-        m_shooterMotors = new SpeedControllerGroup(m_shooterMotorLeft, m_shooterMotorRight);
-        m_shooterMotors.setInverted(true);
+        m_encoderLeft = new CANEncoder(m_shooterMotorLeft);
+        // m_shooterMotors = new SpeedControllerGroup(m_shooterMotorLeft, m_shooterMotorRight);
+        // m_shooterMotors.setInverted(true);
         m_turretMotor = new TalonSRX(Constants.shooter.turretPort);
         m_PIDTest = new CANPIDController(m_shooterMotorLeft);
         m_PIDTest.setFF(Constants.shooter.shooterFF);
@@ -42,7 +41,6 @@ public class Turret {
         m_limitSwitchLeft = new DigitalInput(Constants.shooter.leftLimitSwitchPort);
         m_limitSwitchRight = new DigitalInput(Constants.shooter.rightLimitSwitchPort);
 
-        m_Intake = new Intake();
     }
 
     public void Turn(double amount) {
@@ -58,9 +56,9 @@ public class Turret {
         if (m_shooterShaftEncoder.getVelocity() > 5000) {
             isToSpeed = true;
         }
-        // System.out.println("velocity of shooter is:" + m_shooterShaftEncoder.getVelocity());
+        System.out.println("velocity of shooter is:" + m_shooterShaftEncoder.getVelocity());
+        System.out.println("Velocity of the other shooter motor is: " + m_encoderLeft.getVelocity());
         return isToSpeed;
-        // memememememememememem
     }
 
     // when amount = 0 then 100% of "to"

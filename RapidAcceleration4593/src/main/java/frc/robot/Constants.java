@@ -7,7 +7,7 @@ public class Constants {
         public static final int FLMPort = 10;
         public static final int RLMPort = 11;
 
-        public static final int ultrasonicPort = 1;
+        // public static final int ultrasonicPort = 1;
     }
 
     public class shooter {
@@ -32,7 +32,7 @@ public class Constants {
         public static final int hopperMotorPort = 2;
         public static final int intoShooterMotorPort = 6;
 
-        // public static final int backLimitSwitchPort = 6;
+        public static final int backLimitSwitchPort = 6;
     }
 
     public class climber {

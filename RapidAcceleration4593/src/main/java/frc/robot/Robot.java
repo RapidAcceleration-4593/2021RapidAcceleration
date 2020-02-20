@@ -17,7 +17,6 @@ import com.revrobotics.CANEncoder;
 
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WheelOfFortune;
-import frc.robot.subsystems.BreakBeam.BreakBeamState;
 import frc.robot.subsystems.DriveTrain;
 import frc.robot.Constants;
 import frc.robot.subsystems.Turret;
@@ -55,6 +54,8 @@ public class Robot extends TimedRobot {
   
   public DigitalInput m_limitSwitchLeft;
   public DigitalInput m_limitSwitchRight;
+  
+  long runningTime = System.currentTimeMillis();
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -129,6 +130,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    runningTime = System.currentTimeMillis();
     switch (m_autoSelected) {
     case kCustomAuto:
       // Put custom auto code here
@@ -151,7 +153,7 @@ public class Robot extends TimedRobot {
           m_DriveTrain.drive(0, 0);
         }
         else {
-          m_Intake.liftHopper(0, 0, true);
+          m_Intake.liftHopper(0, 0, true, runningTime);
           m_Turret.Shoot(0);
           m_Turret.Turn(0);
           m_DriveTrain.drive(0, 0);
@@ -174,7 +176,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-
+    runningTime = System.currentTimeMillis();
     m_breakBeamZ.CheckIntake();
     m_breakBeamZ.CheckShooter();
 
@@ -210,14 +212,14 @@ public class Robot extends TimedRobot {
       track();
     }
     else if (m_mainController.getAButton()){
-      m_Intake.liftHopper(.5, 0, true);
+      m_Intake.liftHopper(.5, 0, true, runningTime);
     }
     else if (m_mainController.getXButton()) {
-      m_Intake.liftHopper(-.5, 0, true);
+      m_Intake.liftHopper(-.5, 0, true, runningTime);
     }
     else {
       m_Turret.Shoot(0);
-      m_Intake.liftHopper(0, 0, true);
+      m_Intake.liftHopper(0, 0, true, runningTime);
       m_Intake.intakeHopper(0, 0);
       m_vision.lightOff();
     }
@@ -281,15 +283,11 @@ public class Robot extends TimedRobot {
           m_Turret.Turn(-lerpResult);
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
-          if (m_Turret.Shoot(1) && m_breakBeamZ.m_shooterState == BreakBeam.BreakBeamState.NotChanging) {
-            m_Intake.liftHopper(.5, 1, false); 
-            // m_Intake.hopperBackTime();
-            // m_Intake.m_intoShooterMotor.set(ControlMode.PercentOutput, 1);
+          if (m_Turret.Shoot(1)) { //  && m_breakBeamZ.m_shooterState == BreakBeam.BreakBeamState.NotChanging
+            m_Intake.liftHopper(.5, 1, false, runningTime);
           }
           else {
-            m_Intake.liftHopper(0, 0, false);
-            // m_Intake.hopperBackTime();
-            // m_Intake.m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
+            m_Intake.liftHopper(0, 0, false, runningTime);
           }
         }
       }

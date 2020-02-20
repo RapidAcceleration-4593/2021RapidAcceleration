@@ -70,7 +70,7 @@ public class DriveTrain{
         m_rightSidePID.setD(0);
 
         m_leftSideEncoder.setPosition(0);
-        m_ultrasonic = new AnalogInput(Constants.driveTrain.ultrasonicPort);
+        // m_ultrasonic = new AnalogInput(Constants.driveTrain.ultrasonicPort);
 
 
     }
