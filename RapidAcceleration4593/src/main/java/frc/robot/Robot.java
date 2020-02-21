@@ -143,7 +143,8 @@ public class Robot extends TimedRobot {
       m_breakBeamZ.CheckShooter();
       System.out.println(m_breakBeamZ.CheckShooter());
       if (m_DriveTrain.encoderValue() < Constants.autonomous.encoderBackUp) {
-        m_DriveTrain.drive(-.5, -.5);
+        m_DriveTrain.drive(-.515, -.5);
+        m_Intake.intakeHopper(.69, 0);
         System.out.println(m_DriveTrain.encoderValue());
       } else {
         long m_currentSeconds = System.currentTimeMillis() / 1000;
@@ -211,6 +212,9 @@ public class Robot extends TimedRobot {
     else if (m_auxController.getYButton()) { // must be placed here to keep hopper running, otherwise it sets to 0 when the shoot method is called
       track();
     }
+    else if (m_auxController.getXButton()) {
+      m_Intake.intakeHopper(.69, 0);
+    }
     else if (m_mainController.getAButton()){
       m_Intake.liftHopper(.5, 0, true, runningTime);
     }
@@ -273,7 +277,7 @@ public class Robot extends TimedRobot {
       if (m_vision.isThereTarget() == 1.0 && 
       (m_Turret.leftLimitPressed() == true && m_Turret.rightLimitPressed() == true)) {
 
-        double lerpResult = m_Turret.lerp(0, m_vision.getAngleX(), 0.2);
+        double lerpResult = m_Turret.lerp(-.5, m_vision.getAngleX(), 0.2);
         // System.out.println("lerp result is: " + lerpResult);
         m_Turret.Turn(-lerpResult);
 
@@ -284,10 +288,10 @@ public class Robot extends TimedRobot {
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
           if (m_Turret.Shoot(1)) { //  && m_breakBeamZ.m_shooterState == BreakBeam.BreakBeamState.NotChanging
-            m_Intake.liftHopper(.5, 1, false, runningTime);
+            m_Intake.liftHopper(.6 , 1, true, runningTime);
           }
           else {
-            m_Intake.liftHopper(0, 0, false, runningTime);
+            m_Intake.liftHopper(0, 0, true, runningTime);
           }
         }
       }

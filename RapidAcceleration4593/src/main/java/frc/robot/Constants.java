@@ -52,7 +52,7 @@ public class Constants {
 
     public class autonomous {
         public static final double optimusRange = 10.5;
-        public static final double encoderBackUp = 14;
+        public static final double encoderBackUp = 60; 
         
     }
 

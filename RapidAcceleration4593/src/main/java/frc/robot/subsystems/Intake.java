@@ -35,7 +35,7 @@ public class Intake {
         }
         else {
             if (m_liftLimitSwitch.get() == true &&
-            (runningTime - switchPressedTime <= 2500 || switchPressedTime == 0))
+            (runningTime - switchPressedTime <= 1500 || switchPressedTime == 0))
             {
                 if(switchPressedTime == 0)
                 {
@@ -44,13 +44,13 @@ public class Intake {
 
                 System.out.println(m_liftLimitSwitch.get());
                 
-                m_intoShooterMotor.set(ControlMode.PercentOutput, liftAmount);
-                m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
+                m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
+                m_hopperMotor.set(ControlMode.PercentOutput, 0);
             }
             else{
                 switchPressedTime = 0;
-                m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
-                m_hopperMotor.set(ControlMode.PercentOutput, 0);
+                m_intoShooterMotor.set(ControlMode.PercentOutput, liftAmount);
+                m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
             }
             
         }
