@@ -13,6 +13,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.DigitalInput;
+
+import javax.swing.text.StyledEditorKit.BoldAction;
+
 import com.revrobotics.CANEncoder;
 
 import frc.robot.subsystems.Vision;
@@ -54,8 +57,11 @@ public class Robot extends TimedRobot {
   
   public DigitalInput m_limitSwitchLeft;
   public DigitalInput m_limitSwitchRight;
+
+  public boolean m_hasFirstStopped = false;
   
   long runningTime = System.currentTimeMillis();
+  long firstStopTime;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -139,32 +145,43 @@ public class Robot extends TimedRobot {
     default:
       // Put default auto code here
       // first we need optimal sensor
-      m_breakBeamZ.CheckIntake();
+      // m_breakBeamZ.CheckIntake();
+
       m_breakBeamZ.CheckShooter();
       System.out.println(m_breakBeamZ.CheckShooter());
-      if (m_DriveTrain.encoderValue() < Constants.autonomous.encoderBackUp) {
-        m_DriveTrain.drive(-.515, -.5);
-        m_Intake.intakeHopper(.69, 0);
-        System.out.println(m_DriveTrain.encoderValue());
-      } else {
-        long m_currentSeconds = System.currentTimeMillis() / 1000;
-        m_DriveTrain.drive(0, 0);
-        if (m_breakBeamZ.CheckShooter() != 0) {
-          track();
-          m_DriveTrain.drive(0, 0);
-        }
-        else {
-          m_Intake.liftHopper(0, 0, true, runningTime);
-          m_Turret.Shoot(0);
-          m_Turret.Turn(0);
-          m_DriveTrain.drive(0, 0);
-          m_vision.lightOff();
-        }
-      }
-      break;
 
+      m_WoF.spinDatWheel(-.420);
+
+      if (m_breakBeamZ.CheckShooter() != 0) {
+        track();
+        m_DriveTrain.drive(0, 0);
+        System.out.println("Shooting");
+      } else {
+
+        if (m_DriveTrain.encoderValue() < Constants.autonomous.firstBackupStop) {
+          m_DriveTrain.drive(-.515, -.5);
+          System.out.println(m_DriveTrain.encoderValue());
+          System.out.println("Moving to first stop.");
+        } else if (m_DriveTrain.encoderValue() >= Constants.autonomous.firstBackupStop && 
+        m_hasFirstStopped == false) {
+          m_DriveTrain.drive(0, 0);
+          m_hasFirstStopped = true;
+          System.out.println("First stop.");
+          firstStopTime = System.currentTimeMillis();
+        }
+        else if (m_hasFirstStopped == true && m_DriveTrain.encoderValue() < Constants.autonomous.encoderBackUp && (runningTime - firstStopTime > 500)) {
+          m_DriveTrain.drive(-.515, -.5);
+          m_Intake.intakeHopper(.69, .75);
+          System.out.println("Moving to final stop.");
+        }
+         else {
+           track();
+            System.out.println("Final stop.");
+          }
+        }
+        break;
+      }
     }
-  }
 
   /**
    * This function is called periodically during operator control.
@@ -178,7 +195,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     runningTime = System.currentTimeMillis();
-    m_breakBeamZ.CheckIntake();
+    // m_breakBeamZ.CheckIntake();
     m_breakBeamZ.CheckShooter();
 
     // different methods of driving
@@ -216,7 +233,7 @@ public class Robot extends TimedRobot {
       m_Intake.intakeHopper(.69, 0);
     }
     else if (m_mainController.getAButton()){
-      m_Intake.liftHopper(.5, 0, true, runningTime);
+      m_Intake.liftHopper(1, 0, true, runningTime);
     }
     else if (m_mainController.getXButton()) {
       m_Intake.liftHopper(-.5, 0, true, runningTime);
@@ -277,7 +294,7 @@ public class Robot extends TimedRobot {
       if (m_vision.isThereTarget() == 1.0 && 
       (m_Turret.leftLimitPressed() == true && m_Turret.rightLimitPressed() == true)) {
 
-        double lerpResult = m_Turret.lerp(-.5, m_vision.getAngleX(), 0.2);
+        double lerpResult = m_Turret.lerp(-.5, m_vision.getAngleX(), 0.1);
         // System.out.println("lerp result is: " + lerpResult);
         m_Turret.Turn(-lerpResult);
 
@@ -288,10 +305,10 @@ public class Robot extends TimedRobot {
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
           if (m_Turret.Shoot(1)) { //  && m_breakBeamZ.m_shooterState == BreakBeam.BreakBeamState.NotChanging
-            m_Intake.liftHopper(.6 , 1, true, runningTime);
+            m_Intake.liftHopper(-1, .75, false, runningTime);
           }
           else {
-            m_Intake.liftHopper(0, 0, true, runningTime);
+            m_Intake.liftHopper(0, 0, false, runningTime);
           }
         }
       }

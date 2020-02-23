@@ -23,7 +23,7 @@ public class Constants {
 
         public static final double threshold = .5;
 
-        public static final double turnSpeed = .7;
+        public static final double turnSpeed = .5;
 
     }
 
@@ -33,6 +33,7 @@ public class Constants {
         public static final int intoShooterMotorPort = 6;
 
         public static final int backLimitSwitchPort = 6;
+        public static final int backBreakBeam = 2;
     }
 
     public class climber {
@@ -41,7 +42,7 @@ public class Constants {
     }
 
     public class breakBeam {
-        public static final int intakeBreakBeamPort = 2;
+        // public static final int intakeBreakBeamPort = 2;
         public static final int shooterBreakBeamPort = 4; 
     }
 
@@ -52,8 +53,8 @@ public class Constants {
 
     public class autonomous {
         public static final double optimusRange = 10.5;
-        public static final double encoderBackUp = 60; 
-        
+        public static final double firstBackupStop = 20;
+        public static final double encoderBackUp = 85; 
     }
 
     public class wheelOfFortune{

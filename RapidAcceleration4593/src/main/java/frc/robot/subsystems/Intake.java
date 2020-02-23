@@ -13,13 +13,18 @@ public class Intake {
     public TalonSRX m_intakeMotor;
     
     public long switchPressedTime = 0;
-    public DigitalInput m_liftLimitSwitch;
+
+    // public DigitalInput m_liftLimitSwitch;
+
+    public DigitalInput m_backBreakBeam;
+
     public Intake() {
 
         m_intakeMotor = new TalonSRX(Constants.intake.intakeMotorPort);
         m_hopperMotor = new TalonSRX(Constants.intake.hopperMotorPort);
         m_intoShooterMotor = new TalonSRX(Constants.intake.intoShooterMotorPort);
-        m_liftLimitSwitch = new DigitalInput(Constants.intake.backLimitSwitchPort);
+        // m_liftLimitSwitch = new DigitalInput(Constants.intake.backLimitSwitchPort);
+        m_backBreakBeam = new DigitalInput(Constants.intake.backBreakBeam);
     }
     
     public void intakeHopper(double intakeAmount, double hopperAmount) {
@@ -34,18 +39,23 @@ public class Intake {
             m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
         }
         else {
-            if (m_liftLimitSwitch.get() == true &&
-            (runningTime - switchPressedTime <= 1500 || switchPressedTime == 0))
+            if (m_backBreakBeam.get() == false &&
+            (runningTime - switchPressedTime <= 1000 || switchPressedTime == 0))
             {
                 if(switchPressedTime == 0)
                 {
                     switchPressedTime = System.currentTimeMillis();
                 }
 
-                System.out.println(m_liftLimitSwitch.get());
+                System.out.println(m_backBreakBeam.get());
                 
                 m_intoShooterMotor.set(ControlMode.PercentOutput, 0);
                 m_hopperMotor.set(ControlMode.PercentOutput, 0);
+            }
+            else if(m_backBreakBeam.get() == false &&
+                (runningTime - switchPressedTime >= 1000)){
+                m_intoShooterMotor.set(ControlMode.PercentOutput, liftAmount);
+                m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
             }
             else{
                 switchPressedTime = 0;

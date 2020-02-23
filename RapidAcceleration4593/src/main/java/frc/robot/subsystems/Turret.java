@@ -53,7 +53,7 @@ public class Turret {
         m_shooterMotorLeft.set(-shooterAmount);
         m_shooterMotorRight.set(shooterAmount);
         // System.out.println("shoot called");   
-        if (m_shooterShaftEncoder.getVelocity() > 5000) {
+        if (m_shooterShaftEncoder.getVelocity() > 5300) {
             isToSpeed = true;
         }
         System.out.println("velocity of shooter is:" + m_shooterShaftEncoder.getVelocity());

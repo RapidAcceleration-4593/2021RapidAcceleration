@@ -9,23 +9,23 @@ public class BreakBeam {
         NotChanging, Changing
     }
 
-    public DigitalInput m_intakeBreakBeam;
+    // public DigitalInput m_intakeBreakBeam;
     public DigitalInput m_shooterBreakBeam;
 
-    public BreakBeamState m_intakeState;
+    // public BreakBeamState m_intakeState;
     public BreakBeamState m_shooterState;
 
     int m_numBall = 3; 
     
     public BreakBeam() {
-        m_intakeBreakBeam = new DigitalInput(Constants.breakBeam.intakeBreakBeamPort);
+        // m_intakeBreakBeam = new DigitalInput(Constants.breakBeam.intakeBreakBeamPort);
         m_shooterBreakBeam = new DigitalInput(Constants.breakBeam.shooterBreakBeamPort);
 
-        m_intakeState = BreakBeamState.NotChanging;
+        // m_intakeState = BreakBeamState.NotChanging;
         m_shooterState = BreakBeamState.NotChanging;
 
     }
-    public int CheckIntake() {
+    /* public int CheckIntake() {
         if (m_intakeBreakBeam.get() == false && m_intakeState == BreakBeamState.NotChanging) {
                 m_intakeState = BreakBeamState.Changing;
         }
@@ -36,6 +36,7 @@ public class BreakBeam {
         System.out.println("# of Ballz: " + m_numBall);
         return m_numBall;
     }   
+    */
     public int CheckShooter() {
         if (m_shooterBreakBeam.get() == false && m_shooterState == BreakBeamState.NotChanging) {
                 m_shooterState = BreakBeamState.Changing;
