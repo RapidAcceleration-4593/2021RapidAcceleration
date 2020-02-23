@@ -1,10 +1,12 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import com.revrobotics.CANPIDController;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.revrobotics.CANEncoder;
 import frc.robot.Constants;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
@@ -39,10 +41,10 @@ public class DriveTrain{
         FLM = new CANSparkMax(Constants.driveTrain.FLMPort, MotorType.kBrushless);
         m_leftDrive = new SpeedControllerGroup(FLM, RLM);
 
-        // FRM.restoreFactoryDefaults();
-        // RRM.restoreFactoryDefaults();
-        // RLM.restoreFactoryDefaults();
-        // FLM.restoreFactoryDefaults();
+        FRM.restoreFactoryDefaults();
+        RRM.restoreFactoryDefaults();
+        RLM.restoreFactoryDefaults();
+        FLM.restoreFactoryDefaults();
 
         m_rightSideEncoder = new CANEncoder(FRM);
         // m_rightSidePID = new CANPIDController(FRM);
@@ -58,18 +60,19 @@ public class DriveTrain{
         m_leftSidePID = FLM.getPIDController();
         
         m_leftSidePID.setOutputRange(-1, 1);
-        m_leftSidePID.setFF(.00015);
-        m_leftSidePID.setP(.0001);
+        m_leftSidePID.setFF(.000167);
+        m_leftSidePID.setP(0);
         m_leftSidePID.setI(0);
         m_leftSidePID.setD(0);
     
         m_rightSidePID.setOutputRange(-1, 1);
-        m_rightSidePID.setFF(.00015);
-        m_rightSidePID.setP(.00035);
+        m_rightSidePID.setFF(.000162);
+        m_rightSidePID.setP(0); // .0001
         m_rightSidePID.setI(0);
-        m_rightSidePID.setD(0);
+        m_rightSidePID.setD(0); // .00035
 
         m_leftSideEncoder.setPosition(0);
+        
         // m_ultrasonic = new AnalogInput(Constants.driveTrain.ultrasonicPort);
 
 
@@ -80,10 +83,23 @@ public class DriveTrain{
         // m_leftSidePID.setReference(a1, ControlType.kVelocity);
         // m_rightSidePID.setReference(a2, ControlType.kVelocity);
         m_driveTrain.tankDrive(-a1, -a2);
+
     }
 
     public void arcadeDrive (double a1, double a2) {
-        m_driveTrain.arcadeDrive(-a1, a2);
+        System.out.println("max rpm left " + m_leftSideEncoder.getVelocity());
+        System.out.println("max rpm right " + m_rightSideEncoder.getVelocity());
+        if (Math.abs(a2) >= 0)
+            m_driveTrain.arcadeDrive(0, a2);
+        if (Math.abs(a1) >= .05) {
+
+            m_leftSidePID.setReference(-a1 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+            m_rightSidePID.setReference(a1 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+        }
+
+        
+        
+
     }
     
     public double encoderValue() {

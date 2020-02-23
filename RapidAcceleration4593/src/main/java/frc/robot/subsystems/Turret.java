@@ -21,7 +21,7 @@ public class Turret {
     public DigitalInput m_limitSwitchLeft;
     public DigitalInput m_limitSwitchRight;
 
-    double lastDirection = .8; // may need to switch sign based on starting position
+    double lastDirection = -.8; // may need to switch sign based on starting position
 
     public Turret() {
         m_shooterMotorLeft = new CANSparkMax(Constants.shooter.shooterLeftPort, MotorType.kBrushless);

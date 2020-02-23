@@ -7,6 +7,8 @@ public class Constants {
         public static final int FLMPort = 10;
         public static final int RLMPort = 11;
 
+        public static final double maxRPM = 5500;
+
         // public static final int ultrasonicPort = 1;
     }
 
@@ -54,7 +56,7 @@ public class Constants {
     public class autonomous {
         public static final double optimusRange = 10.5;
         public static final double firstBackupStop = 20;
-        public static final double encoderBackUp = 85; 
+        public static final double encoderBackUp = 95; 
     }
 
     public class wheelOfFortune{

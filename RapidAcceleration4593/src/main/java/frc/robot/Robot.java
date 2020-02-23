@@ -150,8 +150,6 @@ public class Robot extends TimedRobot {
       m_breakBeamZ.CheckShooter();
       System.out.println(m_breakBeamZ.CheckShooter());
 
-      m_WoF.spinDatWheel(-.420);
-
       if (m_breakBeamZ.CheckShooter() != 0) {
         track();
         m_DriveTrain.drive(0, 0);
@@ -159,7 +157,7 @@ public class Robot extends TimedRobot {
       } else {
 
         if (m_DriveTrain.encoderValue() < Constants.autonomous.firstBackupStop) {
-          m_DriveTrain.drive(-.515, -.5);
+          m_DriveTrain.drive(-.519, -.5);
           System.out.println(m_DriveTrain.encoderValue());
           System.out.println("Moving to first stop.");
         } else if (m_DriveTrain.encoderValue() >= Constants.autonomous.firstBackupStop && 
@@ -169,14 +167,17 @@ public class Robot extends TimedRobot {
           System.out.println("First stop.");
           firstStopTime = System.currentTimeMillis();
         }
-        else if (m_hasFirstStopped == true && m_DriveTrain.encoderValue() < Constants.autonomous.encoderBackUp && (runningTime - firstStopTime > 500)) {
-          m_DriveTrain.drive(-.515, -.5);
-          m_Intake.intakeHopper(.69, .75);
+        else if (m_hasFirstStopped == true && 
+            m_DriveTrain.encoderValue() < Constants.autonomous.encoderBackUp && 
+            (runningTime - firstStopTime > 500)) {
+          m_DriveTrain.drive(-.519, -.5);
+          m_Intake.intakeHopper(.69, .5);
           System.out.println("Moving to final stop.");
         }
          else {
-           track();
+            m_DriveTrain.drive(0, 0);
             System.out.println("Final stop.");
+            m_Turret.Shoot(0);
           }
         }
         break;
@@ -202,6 +203,8 @@ public class Robot extends TimedRobot {
     // m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
     m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), .75 * m_mainController.getRawAxis(4));
     // System.out.println(m_DriveTrain.encoderValue());
+    // m_DriveTrain.forward(m_mainController.getRawAxis(1));
+    // m_DriveTrain.turn(m_mainController.getRawAxis(4));
 
     //bumpers
     if (m_mainController.getBumper(Hand.kRight) && m_Turret.rightLimitPressed() == true) {
@@ -294,7 +297,7 @@ public class Robot extends TimedRobot {
       if (m_vision.isThereTarget() == 1.0 && 
       (m_Turret.leftLimitPressed() == true && m_Turret.rightLimitPressed() == true)) {
 
-        double lerpResult = m_Turret.lerp(-.5, m_vision.getAngleX(), 0.1);
+        double lerpResult = m_Turret.lerp(-.5, m_vision.getAngleX(), 0.15);
         // System.out.println("lerp result is: " + lerpResult);
         m_Turret.Turn(-lerpResult);
 
