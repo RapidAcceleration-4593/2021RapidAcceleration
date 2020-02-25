@@ -13,7 +13,7 @@ public class Vision {
         return table.getEntry("tx").getDouble(0);
     }
 
-    public double getAngleY() {
+    /* public double getAngleY() {
         return table.getEntry("ty").getDouble(0);
     }
 
@@ -23,7 +23,7 @@ public class Vision {
 
     public double getSkew() {
         return table.getEntry("ts").getDouble(0);
-    }
+    } */
 
     public double isThereTarget() {
         return table.getEntry("tv").getDouble(0);

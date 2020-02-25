@@ -14,9 +14,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.DigitalInput;
 
-import javax.swing.text.StyledEditorKit.BoldAction;
-
 import com.revrobotics.CANEncoder;
+import com.revrobotics.ControlType;
 
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WheelOfFortune;
@@ -84,9 +83,6 @@ public class Robot extends TimedRobot {
     m_mainController = new XboxController(Constants.controllers.mainControllerPort);
     m_auxController = new XboxController(Constants.controllers.auxControllerPort);
 
-    
-    // m_limitSwitchLeft = new DigitalInput(0);
-    // m_limitSwitchRight = new DigitalInput(1);
   }
 
   /**
@@ -119,7 +115,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
     m_autoSecs = System.currentTimeMillis() / 1000;
     m_DriveTrain.zeroEncoder();
@@ -139,7 +135,21 @@ public class Robot extends TimedRobot {
     runningTime = System.currentTimeMillis();
     switch (m_autoSelected) {
     case kCustomAuto:
-      // Put custom auto code here
+      if (m_DriveTrain.encoderValue() < Constants.autonomous.firstBackupStop) {
+        m_DriveTrain.m_leftSidePID.setReference(-.5 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+        m_DriveTrain.m_rightSidePID.setReference(-.5 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+      }
+      else if (m_DriveTrain.encoderValue() > Constants.autonomous.firstBackupStop) {
+        m_DriveTrain.m_leftSidePID.setReference(0, ControlType.kVelocity);
+        m_DriveTrain.m_rightSidePID.setReference(0, ControlType.kVelocity);
+      }
+      else if (m_breakBeamZ.CheckShooter() != 0) {
+        track();
+      }
+      else {
+        m_Turret.Shoot(0);
+        m_Intake.liftHopper(0, 0, true, runningTime);
+      }
       break;
     case kDefaultAuto:
     default:
@@ -157,7 +167,9 @@ public class Robot extends TimedRobot {
       } else {
 
         if (m_DriveTrain.encoderValue() < Constants.autonomous.firstBackupStop) {
-          m_DriveTrain.drive(-.519, -.5);
+          // m_DriveTrain.drive(-.519, -.5);
+          m_DriveTrain.m_leftSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+          m_DriveTrain.m_rightSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
           System.out.println(m_DriveTrain.encoderValue());
           System.out.println("Moving to first stop.");
         } else if (m_DriveTrain.encoderValue() >= Constants.autonomous.firstBackupStop && 
@@ -170,7 +182,9 @@ public class Robot extends TimedRobot {
         else if (m_hasFirstStopped == true && 
             m_DriveTrain.encoderValue() < Constants.autonomous.encoderBackUp && 
             (runningTime - firstStopTime > 500)) {
-          m_DriveTrain.drive(-.519, -.5);
+          // m_DriveTrain.drive(-.519, -.5);
+          m_DriveTrain.m_leftSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+          m_DriveTrain.m_rightSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
           m_Intake.intakeHopper(.69, .5);
           System.out.println("Moving to final stop.");
         }
