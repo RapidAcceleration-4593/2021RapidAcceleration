@@ -41,10 +41,10 @@ public class DriveTrain{
         FLM = new CANSparkMax(Constants.driveTrain.FLMPort, MotorType.kBrushless);
         m_leftDrive = new SpeedControllerGroup(FLM, RLM);
 
-        FRM.restoreFactoryDefaults();
-        RRM.restoreFactoryDefaults();
-        RLM.restoreFactoryDefaults();
-        FLM.restoreFactoryDefaults();
+        // FRM.restoreFactoryDefaults();
+        // RRM.restoreFactoryDefaults();
+        // RLM.restoreFactoryDefaults();
+        // FLM.restoreFactoryDefaults();
 
         m_rightSideEncoder = new CANEncoder(FRM);
         // m_rightSidePID = new CANPIDController(FRM);

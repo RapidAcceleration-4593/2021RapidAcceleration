@@ -37,7 +37,7 @@ import frc.robot.subsystems.Climber;
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
   private static final String kCustomAuto = "Simple";
-  private String m_autoSelected;
+  // private String m_autoSelected;
 
   public static long m_autoSecs = 0;
 
@@ -114,9 +114,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    // m_autoSelected = m_chooser.getSelected();
+    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
+    // System.out.println("Auto selected: " + m_autoSelected);
     m_autoSecs = System.currentTimeMillis() / 1000;
     m_DriveTrain.zeroEncoder();
     m_DriveTrain.brakeMode();
@@ -133,11 +133,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     runningTime = System.currentTimeMillis();
+    String m_autoSelected = "Simple"; // Simple or Default
     switch (m_autoSelected) {
     case kCustomAuto:
       if (m_DriveTrain.encoderValue() < Constants.autonomous.firstBackupStop) {
-        m_DriveTrain.m_leftSidePID.setReference(-.5 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
-        m_DriveTrain.m_rightSidePID.setReference(-.5 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+        // m_DriveTrain.m_leftSidePID.setReference(.7 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+        // m_DriveTrain.m_rightSidePID.setReference(-.7 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+        m_DriveTrain.drive(-.519, -.5);
+        // m_DriveTrain.arcadeDrive(-.5, 0);
       }
       else if (m_DriveTrain.encoderValue() > Constants.autonomous.firstBackupStop && 
       m_breakBeamZ.CheckShooter() != 0) {
