@@ -36,7 +36,7 @@ import frc.robot.subsystems.Climber;
 
 public class Robot extends TimedRobot {
   private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
+  private static final String kCustomAuto = "Simple";
   private String m_autoSelected;
 
   public static long m_autoSecs = 0;
@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
+    m_chooser.addOption("Simple Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
 
     m_vision = new Vision();
@@ -139,11 +139,10 @@ public class Robot extends TimedRobot {
         m_DriveTrain.m_leftSidePID.setReference(-.5 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
         m_DriveTrain.m_rightSidePID.setReference(-.5 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
       }
-      else if (m_DriveTrain.encoderValue() > Constants.autonomous.firstBackupStop) {
+      else if (m_DriveTrain.encoderValue() > Constants.autonomous.firstBackupStop && 
+      m_breakBeamZ.CheckShooter() != 0) {
         m_DriveTrain.m_leftSidePID.setReference(0, ControlType.kVelocity);
         m_DriveTrain.m_rightSidePID.setReference(0, ControlType.kVelocity);
-      }
-      else if (m_breakBeamZ.CheckShooter() != 0) {
         track();
       }
       else {
