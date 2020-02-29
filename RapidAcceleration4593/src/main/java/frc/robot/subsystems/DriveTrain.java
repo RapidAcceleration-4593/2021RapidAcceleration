@@ -96,11 +96,14 @@ public class DriveTrain{
             m_leftSidePID.setReference(-a1 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
             m_rightSidePID.setReference(a1 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
         }
-
-        
-        
-
     }
+
+        
+    public void simpleArcadeDrive (double b1, double b2) {
+        m_driveTrain.arcadeDrive(-b1, b2);
+    }        
+
+    
     
     public double encoderValue() {
         rotations = Math.abs((m_leftSideEncoder.getPosition()) + Math.abs((m_rightSideEncoder.getPosition()))) / 2;

@@ -139,18 +139,20 @@ public class Robot extends TimedRobot {
       if (m_DriveTrain.encoderValue() < Constants.autonomous.firstBackupStop) {
         // m_DriveTrain.m_leftSidePID.setReference(.7 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
         // m_DriveTrain.m_rightSidePID.setReference(-.7 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
-        m_DriveTrain.drive(-.519, -.5);
+        m_DriveTrain.drive(-.52, -.5);
         // m_DriveTrain.arcadeDrive(-.5, 0);
       }
       else if (m_DriveTrain.encoderValue() > Constants.autonomous.firstBackupStop && 
       m_breakBeamZ.CheckShooter() != 0) {
-        m_DriveTrain.m_leftSidePID.setReference(0, ControlType.kVelocity);
-        m_DriveTrain.m_rightSidePID.setReference(0, ControlType.kVelocity);
+        // m_DriveTrain.m_leftSidePID.setReference(0, ControlType.kVelocity);
+        // m_DriveTrain.m_rightSidePID.setReference(0, ControlType.kVelocity);
+        m_DriveTrain.drive(0, 0);
         track();
       }
       else {
         m_Turret.Shoot(0);
         m_Intake.liftHopper(0, 0, true, runningTime);
+        m_vision.lightOff();
       }
       break;
     case kDefaultAuto:
@@ -166,16 +168,14 @@ public class Robot extends TimedRobot {
         track();
         m_DriveTrain.drive(0, 0);
         System.out.println("Shooting");
-      } else {
-
-        if (m_DriveTrain.encoderValue() < Constants.autonomous.firstBackupStop) {
-          // m_DriveTrain.drive(-.519, -.5);
-          m_DriveTrain.m_leftSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
-          m_DriveTrain.m_rightSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
-          System.out.println(m_DriveTrain.encoderValue());
+      }
+       else {
+        if ( m_DriveTrain.encoderValue() < Constants.autonomous.firstBackupStop) {
+          m_DriveTrain.drive(-.442, -.425);
           System.out.println("Moving to first stop.");
-        } else if (m_DriveTrain.encoderValue() >= Constants.autonomous.firstBackupStop && 
-        m_hasFirstStopped == false) {
+        }
+         else if (m_DriveTrain.encoderValue() >= Constants.autonomous.firstBackupStop && 
+          m_hasFirstStopped == false) {
           m_DriveTrain.drive(0, 0);
           m_hasFirstStopped = true;
           System.out.println("First stop.");
@@ -184,16 +184,19 @@ public class Robot extends TimedRobot {
         else if (m_hasFirstStopped == true && 
             m_DriveTrain.encoderValue() < Constants.autonomous.encoderBackUp && 
             (runningTime - firstStopTime > 500)) {
-          // m_DriveTrain.drive(-.519, -.5);
-          m_DriveTrain.m_leftSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
-          m_DriveTrain.m_rightSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
-          m_Intake.intakeHopper(.69, .5);
+          m_DriveTrain.drive(-.442, -.425);
+          // m_DriveTrain.m_leftSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+          // m_DriveTrain.m_rightSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
+          m_Intake.intakeHopper(.775, .5);
+          m_Intake.liftHopper(0, .5, true, runningTime);
           System.out.println("Moving to final stop.");
         }
          else {
             m_DriveTrain.drive(0, 0);
             System.out.println("Final stop.");
             m_Turret.Shoot(0);
+            m_Intake.intakeHopper(0, 0);
+            m_Intake.liftHopper(0, 0, true, runningTime);
           }
         }
         break;
@@ -217,10 +220,11 @@ public class Robot extends TimedRobot {
 
     // different methods of driving
     // m_DriveTrain.drive(m_mainController.getRawAxis(1), m_mainController.getRawAxis(5));
-    m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), .75 * m_mainController.getRawAxis(4));
+    // m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), .75 * m_mainController.getRawAxis(4));
     // System.out.println(m_DriveTrain.encoderValue());
     // m_DriveTrain.forward(m_mainController.getRawAxis(1));
     // m_DriveTrain.turn(m_mainController.getRawAxis(4));
+    m_DriveTrain.simpleArcadeDrive(m_mainController.getRawAxis(1), .75 * m_mainController.getRawAxis(4));
 
     //bumpers
     if (m_mainController.getBumper(Hand.kRight) && m_Turret.rightLimitPressed() == true) {
@@ -280,10 +284,10 @@ public class Robot extends TimedRobot {
     }
 
     if (m_auxController.getTriggerAxis(Hand.kRight) >= .1) {
-      m_WoF.spinDatWheel(.118 * m_auxController.getTriggerAxis(Hand.kRight));
+      m_WoF.spinDatWheel(.4593 * m_auxController.getTriggerAxis(Hand.kRight));
     }
     else if (m_auxController.getTriggerAxis(Hand.kLeft) >= .1) {
-      m_WoF.spinDatWheel(-.118 * m_auxController.getTriggerAxis(Hand.kLeft));
+      m_WoF.spinDatWheel(-.4593 * m_auxController.getTriggerAxis(Hand.kLeft));
     }
     else {
       m_WoF.spinDatWheel(0);
@@ -324,7 +328,7 @@ public class Robot extends TimedRobot {
           
           // still increases speed, checks when to activate lift and hopper based on shooter rpm
           if (m_Turret.Shoot(1)) { //  && m_breakBeamZ.m_shooterState == BreakBeam.BreakBeamState.NotChanging
-            m_Intake.liftHopper(-1, .75, false, runningTime);
+            m_Intake.liftHopper(-1, .75, false, runningTime); // byepass false, hopper at .75
           }
           else {
             m_Intake.liftHopper(0, 0, false, runningTime);
