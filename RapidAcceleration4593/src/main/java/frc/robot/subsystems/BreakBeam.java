@@ -45,11 +45,11 @@ public class BreakBeam {
             m_numBall--;
             if (m_numBall < 0) {
                 ++m_numBall;
-                System.out.println("you have been v naughty and went negative");
+                //System.out.println("you have been v naughty and went negative");
             }
             m_shooterState = BreakBeamState.NotChanging;
         }
-        System.out.println("# of Ballz: " + m_numBall);
+        //System.out.println("# of Ballz: " + m_numBall);
         return m_numBall;
     }
     

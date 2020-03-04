@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 import com.revrobotics.CANEncoder;
-import com.revrobotics.ControlType;
 
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.WheelOfFortune;
@@ -153,6 +152,7 @@ public class Robot extends TimedRobot {
         m_Turret.Shoot(0);
         m_Intake.liftHopper(0, 0, true, runningTime);
         m_vision.lightOff();
+        m_Turret.Turn(0);
       }
       break;
     case kDefaultAuto:
@@ -162,23 +162,23 @@ public class Robot extends TimedRobot {
       // m_breakBeamZ.CheckIntake();
 
       m_breakBeamZ.CheckShooter();
-      System.out.println(m_breakBeamZ.CheckShooter());
+      //System.out.println(m_breakBeamZ.CheckShooter());
 
       if (m_breakBeamZ.CheckShooter() != 0) {
         track();
         m_DriveTrain.drive(0, 0);
-        System.out.println("Shooting");
+        //System.out.println("Shooting");
       }
        else {
         if ( m_DriveTrain.encoderValue() < Constants.autonomous.firstBackupStop) {
           m_DriveTrain.drive(-.442, -.425);
-          System.out.println("Moving to first stop.");
+          //System.out.println("Moving to first stop.");
         }
          else if (m_DriveTrain.encoderValue() >= Constants.autonomous.firstBackupStop && 
           m_hasFirstStopped == false) {
           m_DriveTrain.drive(0, 0);
           m_hasFirstStopped = true;
-          System.out.println("First stop.");
+          //System.out.println("First stop.");
           firstStopTime = System.currentTimeMillis();
         }
         else if (m_hasFirstStopped == true && 
@@ -189,11 +189,11 @@ public class Robot extends TimedRobot {
           // m_DriveTrain.m_rightSidePID.setReference(-.75 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
           m_Intake.intakeHopper(.775, .5);
           m_Intake.liftHopper(0, .5, true, runningTime);
-          System.out.println("Moving to final stop.");
+          //System.out.println("Moving to final stop.");
         }
          else {
             m_DriveTrain.drive(0, 0);
-            System.out.println("Final stop.");
+            //System.out.println("Final stop.");
             m_Turret.Shoot(0);
             m_Intake.intakeHopper(0, 0);
             m_Intake.liftHopper(0, 0, true, runningTime);
@@ -261,11 +261,16 @@ public class Robot extends TimedRobot {
     else if (m_mainController.getXButton()) {
       m_Intake.liftHopper(-.5, 0, true, runningTime);
     }
+    else if (m_mainController.getYButton()) {
+      m_Turret.tuneFF();
+    }
     else {
-      m_Turret.Shoot(0);
-      m_Intake.liftHopper(0, 0, true, runningTime);
-      m_Intake.intakeHopper(0, 0);
-      m_vision.lightOff();
+      //uncomment fo non-pid tuning
+      // m_Turret.Shoot(0);
+      // m_Intake.liftHopper(0, 0, true, runningTime);
+      // m_Intake.intakeHopper(0, 0);
+      // m_vision.lightOff();
+      m_Turret.stopTune();
     }
 
 
@@ -337,12 +342,12 @@ public class Robot extends TimedRobot {
       }
       else if (m_Turret.leftLimitPressed() == false) {
         // m_Turret.Turn(0);
-        System.out.println("Left limit reached");
+        //System.out.println("Left limit reached");
         m_Turret.seek();
       }
       else if (m_Turret.rightLimitPressed() == false) {
         // m_Turret.Turn(0);
-        System.out.println("Right limit reached");
+        //System.out.println("Right limit reached");
         m_Turret.seek();
       }
       else {
