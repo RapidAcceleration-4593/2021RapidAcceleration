@@ -23,58 +23,80 @@ public class DriveTrain{
     public SpeedControllerGroup m_rightDrive;
     public SpeedControllerGroup m_leftDrive;
     public DifferentialDrive m_driveTrain;
+    public CANPIDController m_frontRightSidePID; 
+    public CANPIDController m_frontLeftSidePID; 
     public CANPIDController m_rightSidePID;
     public CANPIDController m_leftSidePID;
+    public CANEncoder m_frontRightSideEncoder;
+    public CANEncoder m_frontLeftSideEncoder;
     public CANEncoder m_rightSideEncoder;
     public CANEncoder m_leftSideEncoder;
 
-    public AnalogInput m_ultrasonic;
-
     double rotations = 0;
 
+    double m_ffGain = 0.000015;
+    double m_pGain = 6e-5;
+    double m_iGain = 0;
+    double m_IzGain = 0;
+    double m_dGain = 0;
+    double m_minOutput = -1;
+    double m_maxOutput = 1;
+    double m_maxRPM = 5700;
 
     public DriveTrain (){
+        //right motors
         FRM = new CANSparkMax(Constants.driveTrain.FRMPort, MotorType.kBrushless);
         RRM = new CANSparkMax(Constants.driveTrain.RRMPort, MotorType.kBrushless);
-        m_rightDrive = new SpeedControllerGroup(FRM, RRM);
-        RLM = new CANSparkMax(Constants.driveTrain.RLMPort, MotorType.kBrushless);
+        //left motors
         FLM = new CANSparkMax(Constants.driveTrain.FLMPort, MotorType.kBrushless);
+        RLM = new CANSparkMax(Constants.driveTrain.RLMPort, MotorType.kBrushless);
+
+        m_rightSideEncoder = RRM.getEncoder();
+        m_leftSideEncoder = RLM.getEncoder();
+        m_frontRightSideEncoder = FRM.getEncoder();
+        m_frontLeftSideEncoder = FLM.getEncoder();
+        FRM.restoreFactoryDefaults();
+        RRM.restoreFactoryDefaults();
+        RLM.restoreFactoryDefaults();
+        FLM.restoreFactoryDefaults();
+
+        m_rightSidePID = RRM.getPIDController();
+        m_leftSidePID = RLM.getPIDController();        
+        m_frontRightSidePID = FRM.getPIDController();
+        m_frontLeftSidePID = FLM.getPIDController();
+
+        m_leftSidePID.setFF(m_ffGain);
+        m_rightSidePID.setFF(m_ffGain);
+        m_leftSidePID.setP(m_pGain);
+        m_rightSidePID.setP(m_pGain);
+        m_leftSidePID.setI(m_iGain);
+        m_rightSidePID.setI(m_iGain);
+        m_leftSidePID.setD(m_dGain);
+        m_rightSidePID.setD(m_dGain);
+        m_leftSidePID.setIZone(m_IzGain);
+        m_rightSidePID.setIZone(m_IzGain);
+        m_leftSidePID.setOutputRange(m_minOutput, m_maxOutput);
+        m_rightSidePID.setOutputRange(m_minOutput, m_maxOutput);
+
+        m_frontLeftSidePID.setFF(m_ffGain);
+        m_frontRightSidePID.setFF(m_ffGain);
+        m_frontLeftSidePID.setP(m_pGain);
+        m_frontRightSidePID.setP(m_pGain);
+        m_frontLeftSidePID.setI(m_iGain);
+        m_frontRightSidePID.setI(m_iGain);
+        m_frontLeftSidePID.setD(m_dGain);
+        m_frontRightSidePID.setD(m_dGain);
+        m_frontLeftSidePID.setIZone(m_IzGain);
+        m_frontRightSidePID.setIZone(m_IzGain);
+        m_frontLeftSidePID.setOutputRange(m_minOutput, m_maxOutput);
+        m_frontRightSidePID.setOutputRange(m_minOutput, m_maxOutput);
+
+        m_rightDrive = new SpeedControllerGroup(FRM, RRM);
         m_leftDrive = new SpeedControllerGroup(FLM, RLM);
 
-        // FRM.restoreFactoryDefaults();
-        // RRM.restoreFactoryDefaults();
-        // RLM.restoreFactoryDefaults();
-        // FLM.restoreFactoryDefaults();
-
-        m_rightSideEncoder = new CANEncoder(FRM);
-        // m_rightSidePID = new CANPIDController(FRM);
-        // m_leftSidePID = new CANPIDController(FLM);
-        m_leftSideEncoder = new CANEncoder(FLM);
         m_driveTrain = new DifferentialDrive(m_leftDrive, m_rightDrive);
         m_driveTrain.setRightSideInverted(true);
         m_driveTrain.setDeadband(.1);
-
-        // we might be initializing pid stuff wrong!
-        // below is new way to do PID which i think is actually right
-        m_rightSidePID = FRM.getPIDController();
-        m_leftSidePID = FLM.getPIDController();
-        
-        m_leftSidePID.setOutputRange(-1, 1);
-        m_leftSidePID.setFF(.000167);
-        m_leftSidePID.setP(0);
-        m_leftSidePID.setI(0);
-        m_leftSidePID.setD(0);
-    
-        m_rightSidePID.setOutputRange(-1, 1);
-        m_rightSidePID.setFF(.000162);
-        m_rightSidePID.setP(0); // .0001
-        m_rightSidePID.setI(0);
-        m_rightSidePID.setD(0); // .00035
-
-        m_leftSideEncoder.setPosition(0);
-        
-        // m_ultrasonic = new AnalogInput(Constants.driveTrain.ultrasonicPort);
-
 
     }
 
@@ -87,23 +109,16 @@ public class DriveTrain{
     }
 
     public void arcadeDrive (double a1, double a2) {
-        System.out.println("max rpm left " + m_leftSideEncoder.getVelocity());
-        System.out.println("max rpm right " + m_rightSideEncoder.getVelocity());
-        if (Math.abs(a2) >= 0)
-            m_driveTrain.arcadeDrive(0, a2);
-        if (Math.abs(a1) >= .05) {
-
-            m_leftSidePID.setReference(-a1 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
-            m_rightSidePID.setReference(a1 * Constants.driveTrain.maxRPM, ControlType.kVelocity);
-        }
+        m_driveTrain.arcadeDrive(-a1, a2);
     }
 
-        
-    public void simpleArcadeDrive (double b1, double b2) {
-        m_driveTrain.arcadeDrive(-b1, b2);
-    }        
-
-    
+    public void driveStraight (double a1) {
+        double error = Math.abs(m_rightSideEncoder.getVelocity() + m_frontRightSideEncoder.getVelocity()) - Math.abs(m_leftSideEncoder.getVelocity() + m_frontLeftSideEncoder.getVelocity()); 
+        double turn_power = m_pGain * error; 
+        m_driveTrain.arcadeDrive(a1, turn_power, false);
+        System.out.println("error is: " + error);
+        System.out.println("Turn Power is: " + turn_power);
+    }    
     
     public double encoderValue() {
         rotations = Math.abs((m_leftSideEncoder.getPosition()) + Math.abs((m_rightSideEncoder.getPosition()))) / 2;
@@ -114,15 +129,6 @@ public class DriveTrain{
     public void zeroEncoder() {
         m_leftSideEncoder.setPosition(0);
         m_rightSideEncoder.setPosition(0);
-    }
-
-    public double readDistance() {
-        double ultrasonicSensorValue = m_ultrasonic.getVoltage();
-        final double scaleFactor = 1 / (5. / 1024.);
-        double distance = 5 * ultrasonicSensorValue * scaleFactor;
-        double convertedValue = distance / (305);
-
-        return convertedValue;
     }
 
     public void brakeMode() {

@@ -200,8 +200,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     runningTime = System.currentTimeMillis();
 
-    m_DriveTrain.simpleArcadeDrive(m_mainController.getRawAxis(1), .75 * m_mainController.getRawAxis(4));
-
+    m_DriveTrain.arcadeDrive(m_mainController.getRawAxis(1), .75 * m_mainController.getRawAxis(4));
+    //m_DriveTrain.driveStraight(m_mainController.getRawAxis(1));
     // main controller
     if (m_mainController.getBumper(Hand.kRight) && m_Turret.rightLimitPressed() == true) {
       m_Turret.Turn(-1);
@@ -277,7 +277,7 @@ public class Robot extends TimedRobot {
     if (m_vision.isThereTarget() == 1.0
         && (m_Turret.leftLimitPressed() == true && m_Turret.rightLimitPressed() == true)) {
 
-      double lerpResult = m_Turret.lerp(-.5, m_vision.getAngleX(), 0.15);
+      double lerpResult = m_Turret.lerp(-.25, m_vision.getAngleX(), 0.15);
       // System.out.println("lerp result is: " + lerpResult);
       m_Turret.Turn(-lerpResult);
 
