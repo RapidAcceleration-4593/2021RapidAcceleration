@@ -18,8 +18,8 @@ public class Constants {
 
         public static final int turretPort = 7;
 
-        public static final int leftLimitSwitchPort = 0;
-        public static final int rightLimitSwitchPort = 1;
+        public static final int leftLimitSwitchPort = 5;
+        public static final int rightLimitSwitchPort = 6;
 
         public static final double shooterFF = .00001;
 
@@ -33,6 +33,7 @@ public class Constants {
         public static final int intakeMotorPort = 1;
         public static final int hopperMotorPort = 2;
         public static final int intoShooterMotorPort = 6;
+        public static final int bottomHopperMotorPort = 3;
 
         public static final int backLimitSwitchPort = 6;
         public static final int backBreakBeam = 2;
@@ -60,7 +61,7 @@ public class Constants {
     }
 
     public class wheelOfFortune{
-       public static final int wheelOfFortunePort = 3; 
+       // public static final int wheelOfFortunePort = 3; 
     }
 
 }

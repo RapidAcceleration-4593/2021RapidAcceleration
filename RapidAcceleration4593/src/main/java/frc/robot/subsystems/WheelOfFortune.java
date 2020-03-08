@@ -9,11 +9,11 @@ public class WheelOfFortune {
 
 
 public WheelOfFortune() {
-    m_WoFMotor = new TalonSRX(Constants.wheelOfFortune.wheelOfFortunePort);
+    // m_WoFMotor = new TalonSRX(Constants.wheelOfFortune.wheelOfFortunePort);
 }
 
 public void spinDatWheel(double spinSpeed) {
-    m_WoFMotor.set(ControlMode.PercentOutput, spinSpeed);
+    // m_WoFMotor.set(ControlMode.PercentOutput, spinSpeed);
 }
 
 }
