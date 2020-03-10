@@ -74,7 +74,7 @@ public class Turret {
         boolean isToSpeed = false;
         m_rightPID.setReference(shooterAmount * 3.5 * m_maxRPM, ControlType.kVelocity);
         m_leftPID.setReference(shooterAmount * 3.5 * -m_maxRPM, ControlType.kVelocity);
-        if (m_shooterLeftEncoder.getVelocity() < -4500 && m_shooterRightEncoder.getVelocity() > 4500) {
+        if (m_shooterLeftEncoder.getVelocity() < -5000 && m_shooterRightEncoder.getVelocity() > 5000) {
             isToSpeed = true;
         }
         return isToSpeed;

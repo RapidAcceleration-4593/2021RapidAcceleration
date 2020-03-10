@@ -18,8 +18,8 @@ public class Constants {
 
         public static final int turretPort = 7;
 
-        public static final int leftLimitSwitchPort = 5;
-        public static final int rightLimitSwitchPort = 6;
+        public static final int leftLimitSwitchPort = 7;
+        public static final int rightLimitSwitchPort = 5;
 
         public static final double shooterFF = .00001;
 

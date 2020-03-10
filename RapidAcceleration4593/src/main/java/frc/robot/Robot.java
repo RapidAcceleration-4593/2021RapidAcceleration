@@ -211,46 +211,36 @@ public class Robot extends TimedRobot {
     //m_DriveTrain.driveStraight(m_mainController.getRawAxis(1));
     // main controller
     if (m_mainController.getBumper(Hand.kRight) && m_Turret.rightLimitPressed() == true) {
-      m_Turret.Turn(-1);
+      m_Turret.Turn(-.5);
     } else if (m_mainController.getBumper(Hand.kLeft) && m_Turret.leftLimitPressed() == true) {
-      m_Turret.Turn(1);
+      m_Turret.Turn(.5);
     } else if (m_mainController.getAButton()) {
       m_Intake.liftHopper(1, 0, true, runningTime);
     } else if (m_mainController.getXButton()) {
       m_Intake.liftHopper(-.5, 0, true, runningTime);
-    } else {
-      m_Turret.Turn(0);
-    }
-
-    // aux controller turret stuffs
-    /*if (m_auxController.getBackButton()) {
-      boolean canShoot = m_Turret.Shoot(1);
-      if(canShoot){
-        m_curStopSpeed = 1;
-      }
-    */
-    if (m_auxController.getAButton()) {
+    } 
+    else if (m_auxController.getAButton()) {
       m_Intake.intakeHopper(.69, .3);
     } else if (m_auxController.getBButton()) { // just a smidge
       m_Intake.intakeHopper(-1, -.5);
     } else if (m_auxController.getYButton()) { // must be placed here to keep hopper running, otherwise it sets to 0
                                                // when the shoot method is called
-      // track();
+      track();
 
-      
+      /*
       m_vision.lightOn();
 
       if (m_vision.isThereTarget() == 1.0
           && (m_Turret.leftLimitPressed() == true && m_Turret.rightLimitPressed() == true)) {
   
-        double lerpResult = m_Turret.lerp(-.25, m_vision.getAngleX(), 0.15);
+        double lerpResult = m_Turret.lerp(-.25, m_vision.getAngleX(), 0.1);
         // System.out.println("lerp result is: " + lerpResult);
         m_Turret.Turn(-lerpResult);
   
         // shoot but stop turret
         if (-lerpResult < .5 && -lerpResult > -.5) {
           // m_Turret.Shoot(.75);
-          m_Turret.Turn(-lerpResult);
+          m_Turret.Turn(0);
           System.out.println("Ready to shoot");
         }
         else {
@@ -261,9 +251,7 @@ public class Robot extends TimedRobot {
       else if (m_vision.isThereTarget() != 1.0) {
         m_Turret.seek();
       }
-      
-      
-
+      */
     } else if (m_auxController.getXButton()) {
       m_Intake.intakeHopper(.69, 0);
     } else {
@@ -271,6 +259,8 @@ public class Robot extends TimedRobot {
       m_Intake.liftHopper(0, 0, true, runningTime);
       m_Intake.intakeHopper(0, 0);
       m_vision.lightOff();
+      m_Turret.Turn(0);
+      
     }
 
     // aux controller climb stuffs
@@ -286,13 +276,13 @@ public class Robot extends TimedRobot {
     }
 
     // auz controller spin DAT wheel stuff
-    if (m_auxController.getTriggerAxis(Hand.kRight) >= .1) {
+    /* if (m_auxController.getTriggerAxis(Hand.kRight) >= .1) {
       m_WoF.spinDatWheel(.4593 * m_auxController.getTriggerAxis(Hand.kRight));
     } else if (m_auxController.getTriggerAxis(Hand.kLeft) >= .1) {
       m_WoF.spinDatWheel(-.4593 * m_auxController.getTriggerAxis(Hand.kLeft));
     } else {
       m_WoF.spinDatWheel(0);
-    }
+    } */
 
     if (m_auxController.getBackButton()) {
       boolean canShoot = m_Turret.Shoot(1);
@@ -326,14 +316,14 @@ public class Robot extends TimedRobot {
     if (m_vision.isThereTarget() == 1.0
         && (m_Turret.leftLimitPressed() == true && m_Turret.rightLimitPressed() == true)) {
 
-      double lerpResult = m_Turret.lerp(-.25, m_vision.getAngleX(), 0.15);
+      double lerpResult = m_Turret.lerp(-.25, m_vision.getAngleX(), 0.1);
       // System.out.println("lerp result is: " + lerpResult);
       m_Turret.Turn(-lerpResult);
 
       // shoot but stop turret
-      if (-lerpResult < .5 && -lerpResult > -.5) {
+      if (-lerpResult < .3 && -lerpResult > -.3) {
         // m_Turret.Shoot(.75);
-        m_Turret.Turn(-lerpResult);
+        m_Turret.Turn(0);
 
         // still increases speed, checks when to activate lift and hopper based on
         // shooter 
@@ -357,7 +347,7 @@ public class Robot extends TimedRobot {
       // System.out.println("Right limit reached");
       m_Turret.seek();
     } else {
-      m_Turret.seek();
+      m_Turret.Turn(0);
     }
     // }
     // else {

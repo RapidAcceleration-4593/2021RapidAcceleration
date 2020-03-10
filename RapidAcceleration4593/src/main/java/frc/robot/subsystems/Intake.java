@@ -32,7 +32,7 @@ public class Intake {
     public void intakeHopper(double intakeAmount, double hopperAmount) {
         m_intakeMotor.set(ControlMode.PercentOutput, -intakeAmount);
         m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
-        m_bottomHopperMotor.set(ControlMode.PercentOutput, -.5 * hopperAmount);
+        m_bottomHopperMotor.set(ControlMode.PercentOutput, -.375 * hopperAmount);
     }
 
     public void liftHopper(double liftAmount, double hopperAmount, boolean bypass, long runningTime) {
@@ -40,7 +40,7 @@ public class Intake {
         if (bypass == true) {
             m_intoShooterMotor.set(ControlMode.PercentOutput, liftAmount);
             m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
-            m_bottomHopperMotor.set(ControlMode.PercentOutput, -hopperAmount);
+            m_bottomHopperMotor.set(ControlMode.PercentOutput, -.375 * hopperAmount);
         }
         else {
             if (m_backBreakBeam.get() == false &&
@@ -62,14 +62,14 @@ public class Intake {
                 (runningTime - switchPressedTime >= 1000)){
                 m_intoShooterMotor.set(ControlMode.PercentOutput, liftAmount);
                 m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
-                m_bottomHopperMotor.set(ControlMode.PercentOutput, -hopperAmount);
+                m_bottomHopperMotor.set(ControlMode.PercentOutput, -.375 * hopperAmount);
 
             }
             else{
                 switchPressedTime = 0;
                 m_intoShooterMotor.set(ControlMode.PercentOutput, liftAmount);
                 m_hopperMotor.set(ControlMode.PercentOutput, hopperAmount);
-                m_bottomHopperMotor.set(ControlMode.PercentOutput, -hopperAmount);
+                m_bottomHopperMotor.set(ControlMode.PercentOutput, -.375 * hopperAmount);
             }
             
         }
