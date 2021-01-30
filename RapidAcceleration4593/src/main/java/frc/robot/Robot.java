@@ -181,6 +181,7 @@ public class Robot extends TimedRobot {
         m_DriveTrain.arcadeDrive(-.5, 0);
         m_Intake.intakeHopper(.775, .5);
         m_Intake.liftHopper(0, .5, true, runningTime);
+        track();
         // System.out.println("Moving to final stop.");
       } else {
         // m_DriveTrain.drive(0, 0);
