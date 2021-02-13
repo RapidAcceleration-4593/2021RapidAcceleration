@@ -91,6 +91,7 @@ public class Robot extends TimedRobot {
    * This runs after the mode specific periodic functions, but before LiveWindow
    * and SmartDashboard integrated updating.
    */
+  
   @Override
   public void robotPeriodic() {
 
@@ -227,6 +228,7 @@ public class Robot extends TimedRobot {
     } else if (m_auxController.getYButton()) { // must be placed here to keep hopper running, otherwise it sets to 0
                                                // when the shoot method is called
       track();
+
 
       /*
       m_vision.lightOn();
