@@ -35,10 +35,10 @@ public class DriveTrain{
     double rotations = 0;
 
     double m_ffGain = 0.000015;
-    double m_pGain = 6e-5;
+    double m_pGain = 0.577;//6e-5;
     double m_iGain = 0;
     double m_IzGain = 0;
-    double m_dGain = 0;
+    double m_dGain = 342.0;
     double m_minOutput = -1;
     double m_maxOutput = 1;
     double m_maxRPM = 5700;
